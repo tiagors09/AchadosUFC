@@ -1,22 +1,28 @@
 import { toast } from "sonner";
-import AgentRegisterForm from "../AgentLoginForm";
+import { useAuth } from "../AuthContext";
+import { RegisterException } from "../AuthExceptions";
+import AgentRegisterForm from "../AgentRegisterForm";
 
 export default function AgentRegisterPage() {
-  const handleLogin = async (data: { login: string; password: string }) => {
+  const { register } = useAuth()
+
+  async function handleLogin(data: { login: string, password: string }) {
     try {
-      console.log('Dados enviados:', data)
-      await new Promise(res => setTimeout(res, 500))
-      toast.success('Seus dados foram enviados.')
-    } catch (error) {
-      toast.error('Erro ao enviar os dados.')
-      console.error(error)
+      await register({ login: data.login })
+      toast.success('Registro realizado com sucesso!')
+    } catch (err) {
+      if (err instanceof RegisterException) {
+        toast.error(err.message)
+      } else {
+        toast.error('Erro inesperado ao tentar registrar no sistema.')
+      }
     }
   }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-semibold mb-6 text-center">Entrar</h1>
+        <h1 className="text-2xl font-semibold mb-6 text-center">Cadastrar</h1>
         <AgentRegisterForm onSubmit={handleLogin} />
       </div>
     </div>
