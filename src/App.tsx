@@ -1,5 +1,11 @@
+import { Toaster } from "./components/ui/sonner"
+
 function App() {
-  return (<></>)
+  return (
+    <>
+      <Toaster />
+    </>
+  )
 }
  
 export default App
