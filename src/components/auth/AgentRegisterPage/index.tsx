@@ -10,6 +10,7 @@ export default function AgentRegisterPage() {
     try {
       await register({ email: data.email, password: data.password })
       toast.success('Registro realizado com sucesso!')
+      //TODO: Redirecionar se quiser: usar navigate.
     } catch (err) {
       if (err instanceof RegisterException) {
         toast.error(err.message)

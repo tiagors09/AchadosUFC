@@ -10,7 +10,7 @@ export default function AgentLoginPage() {
     try {
       await login({ email: data.email, password: data.password });
       toast.success('Login realizado com sucesso!');
-      // Redirecionar se quiser: navigate('/agent') etc.
+      //TODO: Redirecionar se quiser: usar navigate.
     } catch (err) {
       if (err instanceof LoginException) {
         toast.error(err.message);
