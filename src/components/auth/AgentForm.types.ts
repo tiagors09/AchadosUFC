@@ -1,5 +1,5 @@
 export interface AgentLoginData {
-  login: string
+  email: string
   password: string
 }
 

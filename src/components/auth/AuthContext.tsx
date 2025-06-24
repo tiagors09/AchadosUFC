@@ -1,55 +1,62 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import { LoginException, RegisterException } from './AuthExceptions'
-
-type AuthData = {
-  login: string
-}
-
-type AuthContextType = {
-  user: AuthData | null
-  login: (data: AuthData) => Promise<void>
-  register: (data: AuthData) => Promise<void>
-  logout: () => void
-}
+import type { AuthContextType, AuthData, FirebaseLoginError, FirebaseLoginSuccess, FirebaseRegisterError, FirebaseRegisterSuccess } from './AuthTypes'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const AUTH_API_URL = 'https://sua-api-ou-firebase.com'
+const AUTH_API_URL = 'https://identitytoolkit.googleapis.com/v1/accounts:'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthData | null>(null)
 
-  async function login(data: AuthData) {
-    try {
-      // Simulação de requisição (substitua pela real com fetch/axios/etc)
-      const isValid = data.login === 'admin123'
-
-      if (!isValid) {
-        throw new LoginException('Login ou senha inválidos.')
+  async function login({email, password}: AuthData) {
+    const response = await fetch(
+      `${AUTH_API_URL}signInWithPassword?key=${import.meta.env.VITE_API_KEY}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          returnSecureToken: true
+        })
       }
+    )
 
-      // Simulação de sucesso
-      setUser({ login: data.login })
-    } catch (err) {
-      if (err instanceof LoginException) throw err
-      throw new LoginException('Erro inesperado no login.')
-    }
+    const data: FirebaseLoginSuccess | FirebaseLoginError = await response.json()
+  
+    if ('error' in data) 
+      throw new LoginException(data.error.message)
+    
+    sessionStorage.setItem('idToken', data.idToken);
+    sessionStorage.setItem('refreshToken', data.refreshToken);
   }
 
-  async function register(data: AuthData) {
-    try {
-      const alreadyExists = data.login === 'admin123'
-
-      if (alreadyExists) {
-        throw new RegisterException('Esse login já está em uso.')
+  async function register({email, password}: AuthData): Promise<void> {
+    const response = await fetch(
+      `${AUTH_API_URL}signUp?key=${import.meta.env.VITE_API_KEY}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          returnSecureToken: true
+        })
       }
+    )
 
-      // Simulação de sucesso
-      setUser({ login: data.login })
-    } catch (err) {
-      if (err instanceof RegisterException) throw err
-      throw new RegisterException('Erro inesperado no cadastro.')
-    }
+    const data: FirebaseRegisterSuccess | FirebaseRegisterError = await response.json()
+  
+    if ('error' in data) 
+      throw new RegisterException(data.error.message)
+    
+    sessionStorage.setItem('idToken', data.idToken);
+    sessionStorage.setItem('refreshToken', data.refreshToken);
   }
 
   function logout() {

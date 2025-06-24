@@ -4,11 +4,10 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import type { AgentRegisterData, AgentRegisterFormProps } from '../AgentForm.types'
 
-
 export default function AgentRegisterForm({ onSubmit }: AgentRegisterFormProps) {
   const form = useForm<AgentRegisterData>({
     defaultValues: {
-      login: '',
+      email: '',
       password: '',
       confirmPassword: ''
     }
@@ -28,20 +27,19 @@ export default function AgentRegisterForm({ onSubmit }: AgentRegisterFormProps) 
       >
         <FormField
           control={form.control}
-          name="login"
+          name="email"
           rules={{
-            required: 'Login obrigatório',
-            minLength: { value: 8, message: 'Deve ter pelo menos 8 caracteres' },
+            required: 'Email obrigatório',
             pattern: {
-              value: /^[a-zA-Z0-9_]+$/,
-              message: 'Apenas letras, números e underscore são permitidos'
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: 'Digite um email válido'
             }
           }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Login</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="Seu login" {...field} />
+                <Input placeholder="seu@email.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

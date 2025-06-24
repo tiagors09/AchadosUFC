@@ -7,7 +7,7 @@ import type { AgentLoginData, AgentLoginFormProps } from '../AgentForm.types'
 export default function AgentLoginForm({ onSubmit }: AgentLoginFormProps) {
   const form = useForm<AgentLoginData>({
     defaultValues: {
-      login: '',
+      email: '',
       password: ''
     }
   })
@@ -20,20 +20,19 @@ export default function AgentLoginForm({ onSubmit }: AgentLoginFormProps) {
       >
         <FormField
           control={form.control}
-          name="login"
+          name="email"
           rules={{
-            required: 'Login obrigatório',
-            minLength: { value: 8, message: 'Deve ter pelo menos 8 caracteres' },
+            required: 'E-mail obrigatório',
             pattern: {
-              value: /^[a-zA-Z0-9_]+$/,
-              message: 'Apenas letras, números e underscore são permitidos'
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: 'Digite um e-mail válido'
             }
           }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Login</FormLabel>
+              <FormLabel>E-mail</FormLabel>
               <FormControl>
-                <Input placeholder="Seu login" {...field} />
+                <Input placeholder="exemplo@dominio.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
