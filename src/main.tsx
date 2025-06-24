@@ -2,7 +2,7 @@ import {
   BrowserRouter,
   Route,
   Routes,
-} from "react-router";
+} from "react-router"
 
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
