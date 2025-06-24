@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const data: FirebaseLoginSuccess | FirebaseLoginError = await response.json()
   
     if ('error' in data) 
-      throw new RegisterException(data.error.message)
+      throw new LoginException(data.error.message)
     
     sessionStorage.setItem('idToken', data.idToken);
     sessionStorage.setItem('refreshToken', data.refreshToken);
