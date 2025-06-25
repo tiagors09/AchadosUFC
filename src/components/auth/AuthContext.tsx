@@ -55,8 +55,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if ('error' in data) 
       throw new RegisterException(data.error.message)
     
-    sessionStorage.setItem('idToken', data.idToken);
-    sessionStorage.setItem('refreshToken', data.refreshToken);
+    sessionStorage.setItem('idToken', data.idToken)
+    sessionStorage.setItem('refreshToken', data.refreshToken)
   }
 
   function logout() {
