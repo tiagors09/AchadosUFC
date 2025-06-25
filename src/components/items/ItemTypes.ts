@@ -1,6 +1,5 @@
 export interface ItemData {
   description: string
-  location: string
   lab?: string
   room?: string
   block?: string
@@ -8,6 +7,7 @@ export interface ItemData {
 }
 
 export interface UploadedItem extends ItemData {
+  id: string
   createdAt: string
 }
 
@@ -22,4 +22,18 @@ export interface ItemContextType {
   updateItem: (id: string, item: ItemData) => Promise<void>
   getItemById: (id: string) => Promise<UploadedItem | null>
   getItems: () => Promise<void>
+  deleteItem: (id: string) => Promise<void>
+}
+
+export type Item = {
+  id: string
+  description: string
+  createdAt: number
+}
+
+
+export type ItemCardProps = {
+  item: Item
+  onEdit: (item: Item) => void
+  onDeleted?: (id: string) => void
 }

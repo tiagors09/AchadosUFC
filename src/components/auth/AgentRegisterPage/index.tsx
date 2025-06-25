@@ -2,6 +2,7 @@ import { toast } from "sonner";
 import { useAuth } from "../AuthContext";
 import { RegisterException } from "../AuthExceptions";
 import AgentRegisterForm from "../AgentRegisterForm";
+import { redirect } from "react-router";
 
 export default function AgentRegisterPage() {
   const { register } = useAuth()
@@ -10,7 +11,7 @@ export default function AgentRegisterPage() {
     try {
       await register({ email: data.email, password: data.password })
       toast.success('Registro realizado com sucesso!')
-      //TODO: Redirecionar se quiser: usar navigate.
+      redirect('/auth/login')
     } catch (err) {
       if (err instanceof RegisterException) {
         toast.error(err.message)

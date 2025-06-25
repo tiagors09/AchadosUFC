@@ -15,7 +15,6 @@ export default function ItemForm({ initialData = null, onSubmit }: ItemFormProps
   } = useForm<ItemData>({
     defaultValues: initialData || {
       description: '',
-      location: '',
       lab: '',
       room: '',
       block: '',
@@ -51,20 +50,6 @@ export default function ItemForm({ initialData = null, onSubmit }: ItemFormProps
         {errors.description && (
           <p role="alert" className="text-red-600 text-sm mt-1">
             {errors.description.message}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="location">Localização *</Label>
-        <Input
-          id="location"
-          {...register('location', { required: 'Localização é obrigatória' })}
-          aria-invalid={errors.location ? 'true' : 'false'}
-        />
-        {errors.location && (
-          <p role="alert" className="text-red-600 text-sm mt-1">
-            {errors.location.message}
           </p>
         )}
       </div>

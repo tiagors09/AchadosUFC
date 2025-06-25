@@ -29,7 +29,7 @@ createRoot(root).render(
               <Route path='login' element={<AgentLoginPage />} />
               <Route path='register' element={<AgentRegisterPage />} />
             </Route>
-            <Route path='item/list' element={<ItemListPage />} />
+            <Route path='agent/item/list' element={<ItemListPage />} />
           </Routes>  
         </BrowserRouter>
       </ItemProvider>

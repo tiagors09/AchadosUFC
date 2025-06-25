@@ -67,7 +67,11 @@ export function ItemProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    const parsed: UploadedItem[] = Object.values(data)
+    const parsed: UploadedItem[] = Object.entries(data).map(([id, item]) => ({
+      id,
+      ...(item as Omit<UploadedItem, 'id'>)
+    }))
+
     setItems(parsed)
   }
 
@@ -75,9 +79,26 @@ export function ItemProvider({ children }: { children: ReactNode }) {
     getItems()
   }, [])
 
+  const deleteItem = async (id: string): Promise<void> => {
+    const idToken = sessionStorage.getItem('idToken')
+    const response = await fetch(
+      `${FIREBASE_DB_URL}/items/${id}.json?auth=${idToken}`, 
+      {
+        method: 'DELETE',
+      }
+    )
+
+    
+    if (!response.ok)
+      throw new Error('Erro ao excluir item.')
+
+    setItems((prev) => prev.filter((item) => item.id !== id))
+  }
+
+
   return (
     <ItemContext.Provider
-      value={{ items, uploadItem, updateItem, getItemById, getItems }}
+      value={{ items, uploadItem, updateItem, getItemById, getItems, deleteItem }}
     >
       {children}
     </ItemContext.Provider>

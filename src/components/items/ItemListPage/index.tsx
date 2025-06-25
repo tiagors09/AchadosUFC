@@ -3,9 +3,12 @@ import { Button } from '@/components/ui/button'
 import type { ItemData, UploadedItem } from '../ItemTypes'
 import { useItems } from '../ItemContext'
 import ItemModal from '../ItemModal'
+import { toast } from 'sonner'
+import { ItemCard } from '../ItemCard'
 
 export default function ItemListPage() {
-  const { items, uploadItem, updateItem } = useItems()
+  const { items, uploadItem, updateItem, deleteItem, getItems } = useItems()
+
   const [modalOpen, setModalOpen] = useState(false)
   const [editData, setEditData] = useState<UploadedItem | null>(null)
 
@@ -20,47 +23,40 @@ export default function ItemListPage() {
   }
 
   async function handleSubmit(data: ItemData) {
-    /*
     if (editData) {
       await updateItem(editData.id, data)
     } else {
       await uploadItem(data)
     }
     setModalOpen(false)
-    */
+  }
+
+  async function handleDelete(id: string) {
+    try {
+      await deleteItem(id)
+      await getItems()
+      toast.success('Item excluído com sucesso!')
+    } catch {
+      toast.error('Erro ao excluir o item.')
+    }
   }
 
   return (
     <div className="min-h-screen p-4 max-w-4xl mx-auto">
       {/* Header */}
       <header className="flex justify-between items-center mb-6 border-b pb-4">
-        <h1 className="text-2xl font-bold">Itens Encontrados</h1>
+        <h1 className="text-2xl font-bold">Itens Perdidos</h1>
         <Button onClick={handleAdd}>Adicionar Item</Button>
       </header>
 
-      {/* Espaço reservado para lista futura */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {items.map((item) => (
-          <div
-            // key={item.id}
-            className="p-4 border rounded-lg shadow-sm bg-white flex flex-col justify-between"
-          >
-            <div>
-              <h2 className="font-semibold text-lg">{item.description}</h2>
-              <p className="text-muted-foreground text-sm">{item.location}</p>
-              <p className="text-xs mt-1">
-                {new Date(item.createdAt).toLocaleString()}
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-3 self-end"
-              onClick={() => handleEdit(item)}
-            >
-              Editar
-            </Button>
-          </div>
+          <ItemCard
+            key={item.id}
+            item={item}
+            onEdit={handleEdit}
+            onDeleted={handleDelete}
+          />
         ))}
       </div>
 

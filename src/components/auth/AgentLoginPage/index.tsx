@@ -2,20 +2,21 @@ import { toast } from "sonner";
 import AgentLoginForm from "../AgentLoginForm";
 import { useAuth } from "../AuthContext";
 import { LoginException } from "../AuthExceptions";
+import { redirect } from "react-router";
 
 export default function AgentLoginPage() {
-  const { login } = useAuth();
+  const { login } = useAuth()
 
   async function handleLogin(data: { email: string; password: string }) {
     try {
-      await login({ email: data.email, password: data.password });
-      toast.success('Login realizado com sucesso!');
-      //TODO: Redirecionar se quiser: usar navigate.
+      await login({ email: data.email, password: data.password })
+      toast.success('Login realizado com sucesso!')
+      redirect('/agent/item/list')
     } catch (err) {
       if (err instanceof LoginException) {
-        toast.error(err.message);
+        toast.error(err.message)
       } else {
-        toast.error('Erro inesperado ao tentar entrar no sistema.');
+        toast.error('Erro inesperado ao tentar entrar no sistema.')
       }
     }
   }
@@ -27,5 +28,5 @@ export default function AgentLoginPage() {
         <AgentLoginForm onSubmit={handleLogin} />
       </div>
     </div>
-  );
+  )
 }
