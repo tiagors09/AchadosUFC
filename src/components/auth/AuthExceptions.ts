@@ -23,6 +23,10 @@ const errors = new Map<string, string>([
     'USER_DISABLED',
     'Oh não! Parece que esta conta de usuário foi desabilitada por um administrador. Vamos resolver isso juntos!'
   ],
+  [
+    'INVALID_LOGIN_CREDENTIALS',
+    'Parece que você digitou alguma coisa errada!'
+  ],
 ])
 
 export class LoginException extends Error {

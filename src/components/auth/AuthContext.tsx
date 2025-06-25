@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     )
 
     const data: FirebaseLoginSuccess | FirebaseLoginError = await response.json()
-  
+
     if ('error' in data) 
       throw new LoginException(data.error.message)
     
