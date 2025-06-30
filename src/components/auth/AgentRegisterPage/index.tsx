@@ -1,17 +1,18 @@
-import { toast } from "sonner";
-import { useAuth } from "../AuthContext";
-import { RegisterException } from "../AuthExceptions";
-import AgentRegisterForm from "../AgentRegisterForm";
-import { redirect } from "react-router";
+import { toast } from "sonner"
+import { useAuth } from "../AuthContext"
+import { RegisterException } from "../AuthExceptions"
+import AgentRegisterForm from "../AgentRegisterForm"
+import { useNavigate } from "react-router"
 
 export default function AgentRegisterPage() {
   const { register } = useAuth()
+  const navigate = useNavigate()
 
   async function handleRegister(data: { email: string, password: string }) {
     try {
       await register({ email: data.email, password: data.password })
       toast.success('Registro realizado com sucesso!')
-      redirect('/auth/login')
+      navigate('/auth/login')
     } catch (err) {
       if (err instanceof RegisterException) {
         toast.error(err.message)

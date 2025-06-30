@@ -1,17 +1,18 @@
-import { toast } from "sonner";
-import AgentLoginForm from "../AgentLoginForm";
-import { useAuth } from "../AuthContext";
-import { LoginException } from "../AuthExceptions";
-import { redirect } from "react-router";
+import { toast } from "sonner"
+import AgentLoginForm from "../AgentLoginForm"
+import { useAuth } from "../AuthContext"
+import { LoginException } from "../AuthExceptions"
+import { useNavigate } from "react-router"
 
 export default function AgentLoginPage() {
   const { login } = useAuth()
+  const navigate = useNavigate()
 
   async function handleLogin(data: { email: string; password: string }) {
     try {
       await login({ email: data.email, password: data.password })
       toast.success('Login realizado com sucesso!')
-      redirect('/agent/item/list')
+      navigate('/agent/item/list')
     } catch (err) {
       if (err instanceof LoginException) {
         toast.error(err.message)
