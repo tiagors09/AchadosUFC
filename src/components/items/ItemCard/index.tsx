@@ -1,20 +1,20 @@
-import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import { toast } from "sonner"
-import type { ItemCardProps } from "../ItemTypes"
+import type { ItemCardProps, RetrievedItem } from "../ItemTypes"
+import { useRetrievedItems } from "../RetrievedItemContext"
+import { useItems } from "../ItemContext"
+import { Button } from "@/components/ui/button"
+import { RetrieveItemModal } from "../RetrieveItemModal"
 
 export const ItemCard = ({ item, onEdit, onDeleted, editable = false }: ItemCardProps) => {
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [retrieveOpen, setRetrieveOpen] = useState(false)
 
-  const handleDelete = () => setConfirmOpen(true)
+  const { deleteItem } = useItems()
+  const { addRetrievedItem } = useRetrievedItems()
 
-  const confirmDelete = async () => {
-    setConfirmOpen(false)
-    try {
-      await onDeleted?.(item.id)
-    } catch {
-      toast.error('Erro ao excluir o item.')
-    }
+  const handleRetrieve = async (retrieved: RetrievedItem) => {
+    await addRetrievedItem(retrieved)
+    await deleteItem(item.id)
   }
 
   return (
@@ -29,8 +29,11 @@ export const ItemCard = ({ item, onEdit, onDeleted, editable = false }: ItemCard
           <Button variant="outline" size="sm" onClick={() => onEdit?.(item)}>
             Editar
           </Button>
-          <Button variant="destructive" size="sm" onClick={handleDelete}>
+          <Button variant="destructive" size="sm" onClick={() => setConfirmOpen(true)}>
             Excluir
+          </Button>
+          <Button size="sm" onClick={() => setRetrieveOpen(true)}>
+            Retirar
           </Button>
         </div>
       )}
@@ -42,11 +45,21 @@ export const ItemCard = ({ item, onEdit, onDeleted, editable = false }: ItemCard
             <p>Tem certeza que deseja excluir este item?</p>
             <div className="mt-6 flex justify-end gap-4">
               <Button variant="secondary" onClick={() => setConfirmOpen(false)}>Cancelar</Button>
-              <Button variant="destructive" onClick={confirmDelete}>Excluir</Button>
+              <Button variant="destructive" onClick={async () => {
+                setConfirmOpen(false)
+                await onDeleted?.(item.id)
+              }}>Excluir</Button>
             </div>
           </div>
         </div>
       )}
+
+      <RetrieveItemModal
+        item={item}
+        open={retrieveOpen}
+        onClose={() => setRetrieveOpen(false)}
+        onRetrieve={handleRetrieve}
+      />
     </div>
   )
 }
