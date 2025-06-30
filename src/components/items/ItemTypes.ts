@@ -37,3 +37,14 @@ export interface ItemCardProps {
   onDeleted?: (id: string) => Promise<void>
   editable?: boolean
 }
+
+export interface RetrievedItem {
+  id: string
+  item: UploadedItem
+  retrievedAt: string
+  student: {
+    name: string
+    enrollment: string
+    course: string
+  }
+}
