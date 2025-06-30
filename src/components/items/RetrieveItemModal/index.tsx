@@ -1,11 +1,32 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from "@/components/ui/select"
 import { useState } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import type { RetrievedItem, RetrieveItemModalProps } from "../ItemTypes"
+
+const courses = [
+  "Ciência da Computação",
+  "Sistemas de Informação",
+  "Engenharia de Software",
+  "Engenharia da Computação",
+  "Design Digital",
+  "Redes de Computadores"
+]
 
 export const RetrieveItemModal = ({ item, open, onClose, onRetrieve }: RetrieveItemModalProps) => {
   const [name, setName] = useState("")
@@ -51,7 +72,18 @@ export const RetrieveItemModal = ({ item, open, onClose, onRetrieve }: RetrieveI
           </div>
           <div>
             <Label>Curso</Label>
-            <Input value={course} onChange={(e) => setCourse(e.target.value)} />
+            <Select value={course} onValueChange={setCourse}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione um curso" />
+              </SelectTrigger>
+              <SelectContent>
+                {courses.map((courseOption) => (
+                  <SelectItem key={courseOption} value={courseOption}>
+                    {courseOption}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="text-sm text-muted-foreground">
             Retirada em: <strong>{format(new Date(), "dd/MM/yyyy HH:mm")}</strong>
