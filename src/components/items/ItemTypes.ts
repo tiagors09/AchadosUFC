@@ -31,9 +31,9 @@ export type Item = {
   createdAt: number
 }
 
-
-export type ItemCardProps = {
-  item: Item
-  onEdit: (item: Item) => void
-  onDeleted?: (id: string) => void
+export interface ItemCardProps {
+  item: UploadedItem
+  onEdit?: (item: UploadedItem) => void
+  onDeleted?: (id: string) => Promise<void>
+  editable?: boolean
 }

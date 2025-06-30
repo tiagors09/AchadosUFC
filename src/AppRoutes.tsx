@@ -13,8 +13,7 @@ export default function AppRoutes() {
         <Route path='login' element={<AgentLoginPage />} />
         <Route path='register' element={<AgentRegisterPage />} />
       </Route>
-      <Route path='agent/item/list' element={<ItemListPage />} />
-      <Route path='public/item/list' element={<>teste</>} />
+      <Route path='agent/item/list' element={<ItemListPage editable={true} />} />
     </Routes>
   )
 }
