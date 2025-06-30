@@ -7,18 +7,21 @@ import './index.css'
 import { AuthProvider } from "./components/auth/AuthContext"
 import { ItemProvider } from "./components/items/ItemContext"
 import { BrowserRouter } from 'react-router'
+import { RetrievedItemProvider } from './components/items/RetrievedItemContext'
 
 const root = document.getElementById('root')!
 
 createRoot(root).render(
   <StrictMode>
-    <AuthProvider>
-      <ItemProvider>
-        <BrowserRouter>
-          <Toaster />
-          <AppRoutes />
-        </BrowserRouter>
-      </ItemProvider>
-    </AuthProvider>
+    <RetrievedItemProvider>
+      <AuthProvider>
+        <ItemProvider>
+          <BrowserRouter>
+            <Toaster />
+            <AppRoutes />
+          </BrowserRouter>
+        </ItemProvider>
+      </AuthProvider>
+    </RetrievedItemProvider>
   </StrictMode>,
 )
