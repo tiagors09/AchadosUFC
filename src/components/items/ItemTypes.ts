@@ -48,3 +48,10 @@ export interface RetrievedItem {
     course: string
   }
 }
+
+export interface RetrieveItemModalProps {
+  item: UploadedItem
+  open: boolean
+  onClose: () => void
+  onRetrieve: (data: RetrievedItem) => Promise<void>
+}
