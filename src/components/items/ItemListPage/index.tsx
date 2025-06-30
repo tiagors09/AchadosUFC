@@ -1,14 +1,17 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import type { ItemData, UploadedItem } from '../ItemTypes'
-import { useItems } from '../ItemContext'
-import ItemModal from '../ItemModal'
-import { toast } from 'sonner'
-import { ItemCard } from '../ItemCard'
+import { Button } from "@/components/ui/button"
+import { ItemCard } from "../ItemCard"
+import type { ItemData, UploadedItem } from "../ItemTypes"
+import { toast } from "sonner"
+import { useState } from "react"
+import { useItems } from "../ItemContext"
+import ItemModal from "../ItemModal"
 
-export default function ItemListPage() {
+interface Props {
+  editable?: boolean
+}
+
+export default function ItemListPage({ editable = false }: Props) {
   const { items, uploadItem, updateItem, deleteItem, getItems } = useItems()
-
   const [modalOpen, setModalOpen] = useState(false)
   const [editData, setEditData] = useState<UploadedItem | null>(null)
 
@@ -43,37 +46,37 @@ export default function ItemListPage() {
 
   return (
     <div className="min-h-screen p-4 max-w-4xl mx-auto">
-      {/* Header */}
       <header className="flex justify-between items-center mb-6 border-b pb-4">
         <h1 className="text-2xl font-bold">Itens Perdidos</h1>
-        <Button onClick={handleAdd}>Adicionar Item</Button>
+        {editable && <Button onClick={handleAdd}>Adicionar Item</Button>}
       </header>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {items.map((item) => (
+        {items.map((item: UploadedItem) => (
           <ItemCard
             key={item.id}
             item={item}
-            onEdit={handleEdit}
-            onDeleted={handleDelete}
+            editable={editable}
+            onEdit={editable ? handleEdit : undefined}
+            onDeleted={editable ? handleDelete : undefined}
           />
         ))}
       </div>
 
-      {/* Pagination controls reservados para depois */}
       <div className="flex justify-center gap-4 mt-8">
         <Button variant="secondary" disabled>Anterior</Button>
         <Button variant="secondary" disabled>Próxima</Button>
       </div>
 
-      {/* Modal para adicionar/editar item */}
-      <ItemModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        initialData={editData}
-        onSubmit={handleSubmit}
-        triggerLabel="" // não será usado com prop `open`
-      />
+      {editable && (
+        <ItemModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          initialData={editData}
+          onSubmit={handleSubmit}
+          triggerLabel=""
+        />
+      )}
     </div>
   )
 }

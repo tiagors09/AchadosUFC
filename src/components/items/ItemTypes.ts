@@ -31,9 +31,27 @@ export type Item = {
   createdAt: number
 }
 
+export interface ItemCardProps {
+  item: UploadedItem
+  onEdit?: (item: UploadedItem) => void
+  onDeleted?: (id: string) => Promise<void>
+  editable?: boolean
+}
 
-export type ItemCardProps = {
-  item: Item
-  onEdit: (item: Item) => void
-  onDeleted?: (id: string) => void
+export interface RetrievedItem {
+  id: string
+  item: UploadedItem
+  retrievedAt: string
+  student: {
+    name: string
+    enrollment: string
+    course: string
+  }
+}
+
+export interface RetrieveItemModalProps {
+  item: UploadedItem
+  open: boolean
+  onClose: () => void
+  onRetrieve: (data: RetrievedItem) => Promise<void>
 }
