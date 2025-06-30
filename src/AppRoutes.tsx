@@ -1,4 +1,3 @@
-// src/AppRoutes.tsx
 import { Routes, Route, Navigate } from "react-router"
 import App from './App'
 import AgentLoginPage from "./components/auth/AgentLoginPage"
