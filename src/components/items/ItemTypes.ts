@@ -55,3 +55,9 @@ export interface RetrieveItemModalProps {
   onClose: () => void
   onRetrieve: (data: RetrievedItem) => Promise<void>
 }
+
+export interface ItemDetailsModalProps {
+  item: UploadedItem | null
+  open: boolean
+  onClose: () => void
+}
