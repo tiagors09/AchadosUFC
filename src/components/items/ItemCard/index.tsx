@@ -4,10 +4,12 @@ import { useRetrievedItems } from "../RetrievedItemContext"
 import { useItems } from "../ItemContext"
 import { Button } from "@/components/ui/button"
 import { RetrieveItemModal } from "../RetrieveItemModal"
+import { ItemDetailsModal } from "../ItemDetailsModal"
 
 export const ItemCard = ({ item, onEdit, onDeleted, editable = false }: ItemCardProps) => {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [retrieveOpen, setRetrieveOpen] = useState(false)
+  const [detailsOpen, setDetailsOpen] = useState(false)
 
   const { deleteItem } = useItems()
   const { addRetrievedItem } = useRetrievedItems()
@@ -18,7 +20,8 @@ export const ItemCard = ({ item, onEdit, onDeleted, editable = false }: ItemCard
   }
 
   return (
-    <div className="p-4 border rounded-lg shadow-sm bg-white flex flex-col justify-between">
+    <>
+      <div className="p-4 border rounded-lg shadow-sm bg-white flex flex-col justify-between" onClick={() => setDetailsOpen(true)} >
       <div>
         <h2 className="font-semibold text-lg">{item.description}</h2>
         <p className="text-xs mt-1">{new Date(item.createdAt).toLocaleString()}</p>
@@ -61,5 +64,11 @@ export const ItemCard = ({ item, onEdit, onDeleted, editable = false }: ItemCard
         onRetrieve={handleRetrieve}
       />
     </div>
+    <ItemDetailsModal
+        item={item}
+        open={detailsOpen}
+        onClose={() => setDetailsOpen(false)}
+      />
+    </>
   )
 }
