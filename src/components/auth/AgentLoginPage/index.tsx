@@ -10,7 +10,7 @@ export default function AgentLoginPage() {
 
   async function handleLogin(data: { email: string; password: string }) {
     try {
-      await login({ email: data.email, password: data.password })
+      await login(data.email, data.password)
       toast.success('Login realizado com sucesso!')
       navigate('/agent/item/list')
     } catch (err) {
