@@ -1,63 +1,81 @@
-import { createContext, useContext, useState, useEffect } from "react"
-import type { RetrievedItem } from "./ItemTypes"
+import { createContext, useContext, useState, useEffect } from "react";
+import type { RetrievedItem } from "./ItemTypes";
+import { useAuth } from '../auth/AuthContext';
+import AuthService from '../auth/AuthService';
+import { toast } from 'sonner';
 
-const RetrievedItemContext = createContext<{
-  retrievedItems: RetrievedItem[]
-  addRetrievedItem: (data: RetrievedItem) => Promise<void>
-} | undefined>(undefined)
+interface RetrievedItemContextType {
+  retrievedItems: RetrievedItem[];
+  addRetrievedItem: (data: RetrievedItem) => Promise<void>;
+}
 
-const FIREBASE_DB_URL = import.meta.env.VITE_DATABASE_URL
+const RetrievedItemContext = createContext<RetrievedItemContextType | undefined>(undefined);
+
+const FIREBASE_DB_URL = import.meta.env.VITE_DATABASE_URL;
 
 export const RetrievedItemProvider = ({ children }: { children: React.ReactNode }) => {
-  const [retrievedItems, setRetrievedItems] = useState<RetrievedItem[]>([])
+  const [retrievedItems, setRetrievedItems] = useState<RetrievedItem[]>([]);
+  const { idToken, refreshToken, updateTokens, logout } = useAuth();
+
+  // Helper para adicionar o token do usuário nas requisições.
+  async function authFetch(input: string, init?: RequestInit) {
+    const refreshed = await AuthService.refreshTokenIfNeeded(idToken, refreshToken);
+    if (!refreshed) {
+      toast.error('Sessão expirada. Faça login novamente.');
+      logout();
+      throw new Error('Sessão expirada');
+    }
+    updateTokens(refreshed.idToken, refreshed.refreshToken, refreshed.user);
+
+    const url = `${input}?auth=${refreshed.idToken}`;
+    let headers: HeadersInit | undefined = init?.headers;
+    if (init?.body) {
+      headers = {
+        ...(init?.headers || {}),
+        'Content-Type': 'application/json',
+      };
+    }
+
+    return fetch(url, { ...init, headers });
+  }
 
   async function addRetrievedItem(data: RetrievedItem): Promise<void> {
-    const idToken = sessionStorage.getItem('idToken')
-
-    const res = await fetch(
-      `${FIREBASE_DB_URL}/retrievedItems/${data.id}.json?auth=${idToken}`, 
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      }
-    )
-
-    if (!res.ok) 
-      throw new Error("Erro ao salvar retirada.")
-
-    setRetrievedItems((prev) => [...prev, data])
+    const res = await authFetch(
+      `${FIREBASE_DB_URL}/retrievedItems/${data.id}.json`,
+      { method: "PUT", body: JSON.stringify(data) }
+    );
+    if (!res.ok) throw new Error("Erro ao salvar retirada.");
+    setRetrievedItems(prev => [...prev, data]);
   }
 
   async function loadRetrievedItems() {
-    const res = await fetch(`${FIREBASE_DB_URL}/retrievedItems.json`)
-    const data = await res.json()
-    
+    // Listagem pública: se quiser proteger, use authFetch em vez de fetch
+    const res = await fetch(`${FIREBASE_DB_URL}/retrievedItems.json`);
+    const data = await res.json();
     if (!data) {
-      setRetrievedItems([])
-      return
+      setRetrievedItems([]);
+      return;
     }
-
-    const items: RetrievedItem[] = Object.entries(data).map(([id, value]) => ({
+    const items = Object.entries(data).map(([id, value]) => ({
       ...(value as RetrievedItem),
       id
-    }))
-    setRetrievedItems(items)
+    }));
+    setRetrievedItems(items);
   }
 
   useEffect(() => {
-    loadRetrievedItems()
-  }, [])
+    loadRetrievedItems();
+  }, []);
 
   return (
     <RetrievedItemContext.Provider value={{ retrievedItems, addRetrievedItem }}>
       {children}
     </RetrievedItemContext.Provider>
-  )
-}
+  );
+};
 
 export const useRetrievedItems = () => {
-  const ctx = useContext(RetrievedItemContext)
-  if (!ctx) throw new Error("useRetrievedItems precisa estar em RetrievedItemProvider")
-  return ctx
-}
+  const ctx = useContext(RetrievedItemContext);
+  if (!ctx) throw new Error("useRetrievedItems precisa estar em RetrievedItemProvider");
+  return ctx;
+};
