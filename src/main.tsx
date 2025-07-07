@@ -13,15 +13,15 @@ const root = document.getElementById('root')!
 
 createRoot(root).render(
   <StrictMode>
-    <RetrievedItemProvider>
+    <BrowserRouter>
       <AuthProvider>
-        <ItemProvider>
-          <BrowserRouter>
+        <RetrievedItemProvider>
+          <ItemProvider>
             <Toaster />
             <AppRoutes />
-          </BrowserRouter>
-        </ItemProvider>
+          </ItemProvider>
+        </RetrievedItemProvider>
       </AuthProvider>
-    </RetrievedItemProvider>
+    </BrowserRouter>
   </StrictMode>,
 )

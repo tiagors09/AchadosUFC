@@ -1,11 +1,12 @@
-import { Routes, Route, Navigate } from "react-router"
-import App from './App'
-import AgentLoginPage from "./components/auth/AgentLoginPage"
-import AgentRegisterPage from "./components/auth/AgentRegisterPage"
-import ItemListPage from "./components/items/ItemListPage"
+import { Routes, Route, Navigate } from "react-router";
+import App from './App';
+import AgentLoginPage from "./components/auth/AgentLoginPage";
+import AgentRegisterPage from "./components/auth/AgentRegisterPage";
+import ItemListPage from "./components/items/ItemListPage";
+import { useAuth } from './components/auth/AuthContext';
 
 export default function AppRoutes() {
-  const idToken = sessionStorage.getItem('idToken')
+  const { isAuthenticated } = useAuth();
 
   return (
     <Routes>
@@ -15,9 +16,9 @@ export default function AppRoutes() {
         <Route path='register' element={<AgentRegisterPage />} />
       </Route>
       <Route path='agent/item/list' element={
-        idToken ? 
-        <ItemListPage editable={true} /> : 
-        <Navigate to='/auth/login'/>
+        isAuthenticated ?
+          <ItemListPage editable={true} /> :
+          <Navigate to='/auth/login'/>
       } />
     </Routes>
   )

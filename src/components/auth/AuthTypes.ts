@@ -3,11 +3,23 @@ export type AuthData = {
   password: string
 }
 
+export type UserPayload = {
+  user_id: string
+  email: string
+  exp: number
+  iat: number
+  [key: string]: unknown
+}
+
 export type AuthContextType = {
-  user: AuthData | null
-  login: (data: AuthData) => Promise<void>
-  register: (data: AuthData) => Promise<void>
+  idToken: string | null
+  refreshToken: string | null
+  user: UserPayload | null // payload decodificado do token
+  isAuthenticated: boolean
+  signIn: (email: string, password: string) => Promise<void>
   logout: () => void
+  updateTokens: (idToken: string, refreshToken: string, user: UserPayload) => void
+  initialized: boolean
 }
 
 export type FirebaseRegisterSuccess = {
@@ -29,3 +41,9 @@ export type FirebaseRegisterError = {
 export type FirebaseLoginSuccess = FirebaseRegisterSuccess
 
 export type FirebaseLoginError = FirebaseRegisterError
+
+export type AuthServiceInitResult = {
+  idToken: string
+  refreshToken: string
+  user: UserPayload
+} | null
