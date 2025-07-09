@@ -4,6 +4,7 @@ export interface ItemData {
   room?: string
   block?: string
   dropTime: string
+  imageUrl?: string
 }
 
 export interface UploadedItem extends ItemData {
@@ -13,12 +14,13 @@ export interface UploadedItem extends ItemData {
 
 export interface ItemFormProps {
   initialData?: UploadedItem | null
-  onSubmit: (data: ItemData) => Promise<void>
+  onSubmit: (data: ItemData, file?: File) => Promise<void>
 }
+
 
 export interface ItemContextType {
   items: UploadedItem[]
-  uploadItem: (item: ItemData) => Promise<void>
+  uploadItem: (item: ItemData, file?: File) => Promise<void>
   updateItem: (id: string, item: ItemData) => Promise<void>
   getItemById: (id: string) => Promise<UploadedItem | null>
   getItems: () => Promise<void>

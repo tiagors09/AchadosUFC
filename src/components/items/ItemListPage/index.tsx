@@ -29,11 +29,11 @@ export default function ItemListPage({ editable = false }: Props) {
     setModalOpen(true)
   }
 
-  async function handleSubmit(data: ItemData) {
+  async function handleSubmit(data: ItemData, file?: File) {
     if (editData) {
       await updateItem(editData.id, data)
     } else {
-      await uploadItem(data)
+      await uploadItem(data, file)
     }
     setModalOpen(false)
   }

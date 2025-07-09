@@ -3,6 +3,7 @@ import { useAuth } from '../auth/AuthContext';
 import AuthService from '../auth/AuthService';
 import { toast } from 'sonner';
 import type { ItemData, UploadedItem, ItemContextType } from './ItemTypes';
+import supabase from '@/utils/supabase';
 
 const ItemContext = createContext<ItemContextType | undefined>(undefined);
 const FIREBASE_DB_URL = import.meta.env.VITE_DATABASE_URL;
@@ -14,6 +15,41 @@ export function ItemProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     getItems();
   }, []);
+
+
+  /**
+   * Faz upload da imagem no Supabase Storage e retorna a URL pública.
+   *
+   * @param file - Arquivo de imagem.
+   * @param itemId - ID do item (usado como nome da imagem).
+   * @returns URL pública da imagem.
+   */
+  async function uploadItemImage(file: File, itemId: string): Promise<string> {
+    const filePath = `${itemId}.jpg`
+
+    const { data, error } = await supabase.storage
+      .from('itens')
+      .upload(filePath, file)
+
+    console.log(data)
+
+    if (error) {
+      console.error('Erro ao fazer upload da imagem:', error.message);
+      throw new Error('Falha ao enviar imagem')
+    }
+
+    return getItemImageUrl(filePath);
+  }
+
+  /**
+   * Gera a URL pública da imagem de um item.
+   *
+   * @param path - Caminho do arquivo (por exemplo: `itemId/nome.jpg`)
+   * @returns URL pública da imagem.
+   */
+  function getItemImageUrl(path: string): string {
+    return `${supabase.storage.from('itens').getPublicUrl(path).data.publicUrl}`;
+  }
 
   /**
    * Realiza uma requisição autenticada ao Firebase, atualizando o token se necessário.
@@ -54,7 +90,13 @@ export function ItemProvider({ children }: { children: ReactNode }) {
    * @returns {Promise<void>}
    * @throws {Error} - Se ocorrer erro ao salvar o item.
    */
-  async function uploadItem(item: ItemData): Promise<void> {
+  async function uploadItem(item: ItemData, file?: File): Promise<void> {
+    console.log(file)
+    if (file) {
+      const imageUrl = await uploadItemImage(file, item.description.trim().toLowerCase() || 'sem-nome')
+      item.imageUrl = imageUrl
+    }
+
     const res = await authFetch(
       `${FIREBASE_DB_URL}/items.json`,
       { 
