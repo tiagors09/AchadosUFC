@@ -3,6 +3,7 @@ import { useAuth } from '../auth/AuthContext';
 import AuthService from '../auth/AuthService';
 import { toast } from 'sonner';
 import type { ItemData, UploadedItem, ItemContextType } from './ItemTypes';
+import supabase from '@/utils/supabase';
 
 const ItemContext = createContext<ItemContextType | undefined>(undefined);
 const FIREBASE_DB_URL = import.meta.env.VITE_DATABASE_URL;
@@ -14,6 +15,41 @@ export function ItemProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     getItems();
   }, []);
+
+
+  /**
+   * Faz upload da imagem no Supabase Storage e retorna a URL pública.
+   *
+   * @param file - Arquivo de imagem.
+   * @param itemId - ID do item (usado como nome da imagem).
+   * @returns URL pública da imagem.
+   */
+  async function uploadItemImage(file: File, itemId: string): Promise<string> {
+    const filePath = `${itemId}.jpg`
+
+    const { data, error } = await supabase.storage
+      .from('itens')
+      .upload(filePath, file)
+
+    console.log(data)
+
+    if (error) {
+      console.error('Erro ao fazer upload da imagem:', error.message);
+      throw new Error('Falha ao enviar imagem')
+    }
+
+    return getItemImageUrl(filePath);
+  }
+
+  /**
+   * Gera a URL pública da imagem de um item.
+   *
+   * @param path - Caminho do arquivo (por exemplo: `itemId/nome.jpg`)
+   * @returns URL pública da imagem.
+   */
+  function getItemImageUrl(path: string): string {
+    return `${supabase.storage.from('itens').getPublicUrl(path).data.publicUrl}`;
+  }
 
   /**
    * Realiza uma requisição autenticada ao Firebase, atualizando o token se necessário.
@@ -54,19 +90,44 @@ export function ItemProvider({ children }: { children: ReactNode }) {
    * @returns {Promise<void>}
    * @throws {Error} - Se ocorrer erro ao salvar o item.
    */
-  async function uploadItem(item: ItemData): Promise<void> {
-    const res = await authFetch(
-      `${FIREBASE_DB_URL}/items.json`,
-      { 
-        method: 'POST', 
-        body: JSON.stringify({ 
-          ...item, 
-          createdAt: new Date().toISOString() 
-        }) 
-      }
-    );
-    if (!res.ok) throw new Error('Erro ao salvar item. Tente novamente mais tarde.');
-    await getItems();
+  async function uploadItem(item: ItemData, file?: File): Promise<void> {
+    // Passo 1: Salvar o item inicialmente (sem imagem) no Firebase
+    const res = await authFetch(`${FIREBASE_DB_URL}/items.json`, {
+      method: 'POST',
+      body: JSON.stringify({
+        ...item,
+        createdAt: new Date().toISOString(),
+      }),
+    })
+
+    // Passo 2: Obter o ID gerado pelo Firebase
+    const data = await res.json()
+    const itemId = data.name // Firebase retorna o ID no campo "name"
+
+    // Passo 3: Se houver imagem, fazer upload usando o ID como nome
+    let imageUrl: string | undefined;
+    if (file) {
+      imageUrl = await uploadItemImage(file, itemId)
+    }
+
+    // Passo 4: Atualizar o item com o ID e imageUrl (se houver)
+    const updatedItem: UploadedItem = {
+      ...item,
+      id: itemId,
+      imageUrl,
+      createdAt: new Date().toISOString(),
+    }
+
+    const updateRes = await authFetch(`${FIREBASE_DB_URL}/items/${itemId}.json`, {
+      method: 'PUT',
+      body: JSON.stringify(updatedItem),
+    })
+
+    if (!updateRes.ok) {
+      throw new Error('Erro ao atualizar item com imagem.')
+    }
+
+    await getItems()
   }
 
   /**

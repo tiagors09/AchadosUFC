@@ -1,10 +1,10 @@
-import { useForm } from 'react-hook-form'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { toast } from 'sonner'
-import type { ItemData, ItemFormProps } from '../ItemTypes'
-import { useEffect } from 'react'
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
+import type { ItemData, ItemFormProps } from '../ItemTypes';
+import { useEffect, useState } from 'react';
 
 export default function ItemForm({ initialData = null, onSubmit }: ItemFormProps) {
   const {
@@ -20,18 +20,21 @@ export default function ItemForm({ initialData = null, onSubmit }: ItemFormProps
       block: '',
       dropTime: ''
     }
-  })
+  });
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   // Atualiza o form se mudar initialData (útil para edição)
   useEffect(() => {
-    if (initialData) reset(initialData)
-  }, [initialData, reset])
+    if (initialData) reset(initialData);
+  }, [initialData, reset]);
 
   async function submitHandler(data: ItemData) {
     try {
-      await onSubmit(data)
+      await onSubmit(data, imageFile ?? undefined) // envia o arquivo junto
       toast.success('Item salvo com sucesso!')
       reset()
+      setImageFile(null)
     } catch (error) {
       toast.error('Erro ao salvar o item.')
       console.error(error)
@@ -84,9 +87,23 @@ export default function ItemForm({ initialData = null, onSubmit }: ItemFormProps
         )}
       </div>
 
+      <div>
+        <Label htmlFor="image">Imagem do item</Label>
+        <Input
+          id="image"
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            if (e.target.files && e.target.files[0]) {
+              setImageFile(e.target.files[0])
+            }
+          }}
+        />
+      </div>
+
       <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Salvando...' : initialData ? 'Atualizar Item' : 'Cadastrar Item'}
       </Button>
     </form>
-  )
+  );
 }
