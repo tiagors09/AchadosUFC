@@ -91,24 +91,43 @@ export function ItemProvider({ children }: { children: ReactNode }) {
    * @throws {Error} - Se ocorrer erro ao salvar o item.
    */
   async function uploadItem(item: ItemData, file?: File): Promise<void> {
-    console.log(file)
+    // Passo 1: Salvar o item inicialmente (sem imagem) no Firebase
+    const res = await authFetch(`${FIREBASE_DB_URL}/items.json`, {
+      method: 'POST',
+      body: JSON.stringify({
+        ...item,
+        createdAt: new Date().toISOString(),
+      }),
+    })
+
+    // Passo 2: Obter o ID gerado pelo Firebase
+    const data = await res.json()
+    const itemId = data.name // Firebase retorna o ID no campo "name"
+
+    // Passo 3: Se houver imagem, fazer upload usando o ID como nome
+    let imageUrl: string | undefined;
     if (file) {
-      const imageUrl = await uploadItemImage(file, item.description.trim().toLowerCase() || 'sem-nome')
-      item.imageUrl = imageUrl
+      imageUrl = await uploadItemImage(file, itemId)
     }
 
-    const res = await authFetch(
-      `${FIREBASE_DB_URL}/items.json`,
-      { 
-        method: 'POST', 
-        body: JSON.stringify({ 
-          ...item, 
-          createdAt: new Date().toISOString() 
-        }) 
-      }
-    );
-    if (!res.ok) throw new Error('Erro ao salvar item. Tente novamente mais tarde.');
-    await getItems();
+    // Passo 4: Atualizar o item com o ID e imageUrl (se houver)
+    const updatedItem: UploadedItem = {
+      ...item,
+      id: itemId,
+      imageUrl,
+      createdAt: new Date().toISOString(),
+    }
+
+    const updateRes = await authFetch(`${FIREBASE_DB_URL}/items/${itemId}.json`, {
+      method: 'PUT',
+      body: JSON.stringify(updatedItem),
+    })
+
+    if (!updateRes.ok) {
+      throw new Error('Erro ao atualizar item com imagem.')
+    }
+
+    await getItems()
   }
 
   /**
