@@ -71,6 +71,35 @@ class AuthService {
   }
 
   /**
+   * Realiza o registro de um novo usuário com email e senha.
+   * Faz uma requisição para a API do Firebase Authentication para criar uma nova conta,
+   * armazena os tokens no localStorage e retorna os dados do usuário decodificados do idToken.
+   *
+   * @param {string} email - O email do novo usuário.
+   * @param {string} password - A senha do novo usuário.
+   * @returns {Promise<{ idToken: string, refreshToken: string, user: UserPayload }>}
+   *          Um objeto contendo o idToken, refreshToken e o payload do usuário.
+   * @throws {Error} Se o registro falhar ou o token for inválido.
+   */
+  async signUp(email: string, password: string): Promise<{ idToken: string, refreshToken: string, user: UserPayload }> {
+    const response = await fetch(
+      `${this.AUTH_API_URL}signUp?key=${this.API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, returnSecureToken: true })
+      }
+    );
+    const data: FirebaseLoginSuccess | FirebaseLoginError = await response.json();
+    if ('error' in data) throw new Error(data.error.message);
+    localStorage.setItem(this.LOCALSTORAGE_ID_TOKEN, data.idToken);
+    localStorage.setItem(this.LOCALSTORAGE_REFRESH_TOKEN, data.refreshToken);
+    const user = this.decodeJwtPayload(data.idToken);
+    if (!user) throw new Error('Token inválido');
+    return { idToken: data.idToken, refreshToken: data.refreshToken, user };
+  }
+
+  /**
    * Verifica se o idToken está próximo de expirar e, se necessário, faz o refresh do token.
    * Se o token ainda for válido por mais de 2 minutos, retorna os dados atuais.
    * Caso contrário, faz uma requisição para atualizar o token e retorna os novos dados.

@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import type { AgentRegisterData, AgentRegisterFormProps } from '../AgentForm.types'
 
-export default function AgentRegisterForm({ onSubmit }: AgentRegisterFormProps) {
+export default function AgentRegisterForm({ onRegister }: AgentRegisterFormProps) {
   const form = useForm<AgentRegisterData>({
     defaultValues: {
       email: '',
@@ -21,7 +21,7 @@ export default function AgentRegisterForm({ onSubmit }: AgentRegisterFormProps) 
             form.setError('confirmPassword', { message: 'Senhas não coincidem' })
             return
           }
-          onSubmit(data)
+          onRegister(data)
         })}
         className="space-y-4 max-w-sm mx-auto"
       >

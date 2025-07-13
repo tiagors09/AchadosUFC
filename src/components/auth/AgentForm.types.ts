@@ -3,14 +3,12 @@ export interface AgentLoginData {
   password: string
 }
 
-export interface AgentRegisterData extends AgentLoginData {
+export type AgentLoginFormProps = { onSubmit: (data: AgentLoginData) => Promise<void> }
+
+export interface AgentRegisterData {
+  email: string
+  password: string
   confirmPassword: string
 }
 
-export interface AgentLoginFormProps {
-  onSubmit: (data: AgentLoginData) => void
-}
-
-export interface AgentRegisterFormProps {
-  onSubmit: (data: AgentRegisterData) => void
-}
+export type AgentRegisterFormProps = { onRegister: (data: AgentRegisterData) => Promise<void> }

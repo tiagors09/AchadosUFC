@@ -11,6 +11,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string) => Promise<void>;
   logout: () => void;
   updateTokens: (idToken: string, refreshToken: string, user: UserPayload) => void;
 }
@@ -33,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: false,
     loading: true,
     login: async () => {},
+    register: async () => {},
     logout: () => {},
     updateTokens: () => {},
   });
@@ -97,8 +99,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuth(prev => ({ ...prev, idToken, refreshToken, user, isAuthenticated: !!idToken }));
   };
 
+  /**
+   * Realiza o registro de um novo usuário com email e senha.
+   * Atualiza o estado de autenticação com os dados retornados do AuthService.
+   * @param {string} email - Email do usuário.
+   * @param {string} password - Senha do usuário.
+   * @returns {Promise<void>}
+   * @throws {Error} Se o registro falhar.
+   */
+  const register = async (email: string, password: string) => {
+    setAuth(prev => ({ ...prev, loading: true }));
+    try {
+      const result = await AuthService.signUp(email, password);
+      setAuth(prev => ({ ...prev, ...result, isAuthenticated: !!result.idToken, loading: false }));
+    } catch (error: unknown) {
+      setAuth(prev => ({ ...prev, loading: false }));
+      throw error;
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ ...auth, login, logout, updateTokens }}>
+    <AuthContext.Provider value={{ ...auth, login, register, logout, updateTokens }}>
       {children}
     </AuthContext.Provider>
   )
