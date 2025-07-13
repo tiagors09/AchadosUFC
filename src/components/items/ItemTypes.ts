@@ -25,6 +25,7 @@ export interface ItemContextType {
   getItemById: (id: string) => Promise<UploadedItem | null>
   getItems: () => Promise<void>
   deleteItem: (id: string) => Promise<void>
+  markItemAsRetrieved: (id: string) => Promise<void>;
 }
 
 export type Item = {
@@ -38,6 +39,7 @@ export interface ItemCardProps {
   onEdit?: (item: UploadedItem) => void
   onDeleted?: (id: string) => Promise<void>
   editable?: boolean
+  children?: React.ReactNode;
 }
 
 export interface RetrievedItem {
