@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from '../../auth/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { User, Menu, Home, DoorOpen } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"; // Import Sheet components
+import logo from '@/assets/UFC-logo.png'
 
 export const Header = () => {
   const { isAuthenticated, logout, user } = useAuth();
@@ -33,7 +34,7 @@ export const Header = () => {
             </SheetContent>
           </Sheet>
         )}
-        <img src="/src/assets/UFC-logo.png" alt="UFC Logo" className="h-[50px] w-[50px] mr-2" />
+        <img src={logo} alt="UFC Logo" className="h-[50px] w-[50px] mr-2" />
         <span className="text-xl font-bold">Achados UFC</span>
       </div>
       <nav>
