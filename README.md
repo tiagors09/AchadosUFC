@@ -1,14 +1,14 @@
 # AchadosUFC - Gerenciamento de Itens Perdidos e Achados
 
-Este repositório contém o código-fonte de uma aplicação web desenvolvida para gerenciar itens perdidos e achados na Universidade Federal do Ceará (UFC). O sistema permite que agentes (usuários autorizados) registrem, visualizem e gerenciem itens, facilitando a devolução aos seus legítimos proprietários.
+Este repositório contém o código-fonte de uma aplicação web desenvolvida para gerenciar itens perdidos e achados na Universidade Federal do Ceará (UFC). O sistema permite que agentes (usuários autorizados) registrem, visualizem, gerenciem o status de itens, e facilitem a devolução aos seus legítimos proprietários, incluindo o registro de itens recuperados.
 
 ## Visão Geral do Projeto
 
 A aplicação "AchadosUFC" é uma ferramenta para otimizar o processo de gestão de itens perdidos e achados dentro do ambiente universitário. Ela oferece uma interface intuitiva para que agentes autorizados possam:
 *   **Registrar novos itens**: Detalhar informações sobre itens encontrados, como descrição, local, data e fotos.
-*   **Visualizar itens disponíveis**: Navegar por uma lista de todos os itens registrados no sistema.
-*   **Gerenciar status dos itens**: Atualizar o status de um item para "devolvido" ou outras categorias relevantes.
-*   **Autenticação de Agentes**: Garante que apenas usuários autorizados possam acessar as funcionalidades de gerenciamento de itens.
+*   **Visualizar itens disponíveis**: Navegar por uma lista de todos os itens registrados no sistema, separados em "itens perdidos" e "itens recuperados".
+*   **Gerenciar status dos itens**: Atualizar o status de um item para "recuperado", registrar os detalhes da retirada (incluindo informações do estudante e agente responsável), e excluir registros de itens perdidos ou recuperados, incluindo suas imagens associadas.
+*   **Autenticação de Agentes**: Garante que apenas usuários autorizados possam acessar as funcionalidades de gerenciamento de itens, com um sistema de navegação e login/logout claro.
 
 ## Tecnologias Utilizadas
 
@@ -19,6 +19,8 @@ O projeto é construído com as seguintes tecnologias principais:
 *   **Vite**: Um ambiente de desenvolvimento frontend moderno que oferece uma experiência de desenvolvimento extremamente rápida.
 *   **React Router**: Para o roteamento declarativo dentro da aplicação, permitindo a navegação entre diferentes páginas.
 *   **Tailwind CSS**: Um framework CSS utilitário para estilização rápida e responsiva.
+*   **Shadcn UI**: Uma coleção de componentes de interface de usuário reutilizáveis e acessíveis para React.
+*   **Lucide React**: Biblioteca de ícones para React.
 
 ## Estrutura de Módulos
 
@@ -27,7 +29,7 @@ O projeto segue uma estrutura modular, com os arquivos organizados em diretório
 *   `src/`: Contém todo o código-fonte da aplicação.
     *   `App.tsx`: Componente raiz da aplicação.
     *   `main.tsx`: Ponto de entrada da aplicação React.
-    *   `AppRoutes.tsx`: Define todas as rotas da aplicação.
+    *   `AppRoutes.tsx`: Define todas as rotas da aplicação, incluindo o cabeçalho condicional.
     *   `utils/`: Utilitários gerais.
         *   `supabase.ts`: Configuração e inicialização do cliente Supabase.
     *   `lib/`: Funções e utilitários auxiliares.
@@ -43,28 +45,31 @@ O projeto segue uma estrutura modular, com os arquivos organizados em diretório
                 *   `index.tsx`: Componente principal do formulário de registro.
             *   `AgentRegisterPage/`: Páginas de registro de agentes.
                 *   `index.tsx`: Componente principal da página de registro.
-            *   `AuthContext.tsx`: Contexto React para gerenciamento de estado de autenticação.
+            *   `AuthContext.tsx`: Contexto React para gerenciamento de estado de autenticação, incluindo a lógica de login/logout.
             *   `AuthExceptions.ts`: Definições de exceções relacionadas à autenticação.
             *   `AuthService.ts`: Serviço para interagir com a API de autenticação (Firebase Auth).
             *   `AuthTypes.ts`: Definições de tipos relacionados à autenticação.
         *   `items/`: Módulo de gerenciamento de itens perdidos e achados.
-            *   `ItemCard/`: Componente para exibir um item individual em um cartão.
+            *   `ItemCard/`: Componente para exibir um item individual em um cartão, com botões de ação e visualização de detalhes.
                 *   `index.tsx`: Componente principal do cartão de item.
-            *   `ItemContext.tsx`: Contexto React para gerenciamento de estado de itens.
-            *   `ItemDetailsModal/`: Modal para exibir detalhes de um item.
+            *   `ItemContext.tsx`: Contexto React para gerenciamento de estado de itens perdidos, incluindo upload, edição, exclusão e marcação como recuperado.
+            *   `ItemDetailsModal/`: Modal para exibir detalhes de um item, agora com informações adicionais para itens recuperados.
                 *   `index.tsx`: Componente principal do modal de detalhes do item.
             *   `ItemForm/`: Componente para formulário de criação/edição de itens.
                 *   `index.tsx`: Componente principal do formulário de item.
-            *   `ItemListPage/`: Página que exibe a lista de itens.
+            *   `ItemListPage/`: Página que exibe a lista de itens, agora dividida em seções de itens perdidos e recuperados.
                 *   `index.tsx`: Componente principal da página de lista de itens.
             *   `ItemModal/`: Modal genérico para ações relacionadas a itens (e.g., adicionar, editar).
                 *   `index.tsx`: Componente principal do modal de item.
-            *   `ItemTypes.ts`: Definições de tipos para itens.
-            *   `RetrievedItemContext.tsx`: Contexto para itens recuperados.
-            *   `RetrieveItemModal/`: Modal para marcar um item como recuperado.
+            *   `ItemTypes.ts`: Definições de tipos para itens, incluindo o novo tipo `RetrievedItem`.
+            *   `RetrievedItemContext.tsx`: Contexto para itens recuperados, gerenciando sua adição e exclusão.
+            *   `RetrieveItemModal/`: Modal para registrar a recuperação de um item.
                 *   `index.tsx`: Componente principal do modal de recuperação de item.
-        *   `ui/`: Componentes de UI genéricos (provavelmente de shadcn/ui).
-            *   `button.tsx`, `dialog.tsx`, `form.tsx`, `input.tsx`, `label.tsx`, `select.tsx`, `skeleton.tsx`, `sonner.tsx`: Componentes de UI reutilizáveis.
+        *   `layout/`: Componentes de layout da aplicação.
+            *   `Header/`: O cabeçalho da aplicação, com navegação condicional e dropdown de usuário.
+                *   `index.tsx`: Componente principal do cabeçalho.
+        *   `ui/`: Componentes de UI genéricos (shadcn/ui).
+            *   `button.tsx`, `dialog.tsx`, `form.tsx`, `input.tsx`, `label.tsx`, `select.tsx`, `skeleton.tsx`, `sonner.tsx`, `dropdown-menu.tsx`, `sheet.tsx`: Componentes de UI reutilizáveis.
 
 ## Integração com Serviços Externos
 
@@ -82,25 +87,27 @@ E utiliza o **Supabase** para:
 A aplicação "AchadosUFC" possui as seguintes rotas principais:
 
 *   **`/` (Página Inicial)**:
-    *   **Descrição**: A rota raiz da aplicação. Atualmente, serve como um ponto de entrada genérico, podendo ser expandida para uma página de boas-vindas ou dashboard em futuras versões.
-    *   **Interação do Usuário**: Não há interações diretas previstas para o usuário final nesta página, além de ser o ponto de partida para outras funcionalidades.
+    *   **Descrição**: A rota raiz da aplicação. Exibe a lista de itens perdidos e recuperados (para agentes autenticados). O cabeçalho da aplicação é visível nesta rota.
+    *   **Interação do Usuário**: Usuários podem navegar entre as seções de itens perdidos e recuperados, e visualizar detalhes dos itens. Agentes autenticados podem interagir com o sidebar e o dropdown de usuário no cabeçalho.
 
 *   **`/auth/login` (Login do Agente)**:
-    *   **Descrição**: Esta página permite que agentes autorizados façam login no sistema usando suas credenciais.
-    *   **Interação do Usuário**: O usuário deve inserir seu nome de usuário/e-mail e senha nos campos de entrada fornecidos. Ao clicar no botão "Login", a aplicação tenta autenticar o agente com o Firebase. Em caso de sucesso, o usuário é redirecionado para a página de listagem de itens (`/agent/item/list`). Em caso de falha, uma mensagem de erro apropriada é exibida.
+    *   **Descrição**: Permite que agentes autorizados façam login no sistema. O cabeçalho da aplicação não é visível nesta rota.
+    *   **Interação do Usuário**: Insere credenciais para autenticação. Redireciona para `/agent/item/list` em caso de sucesso. O botão "Acessar portaria" no cabeçalho (em rotas não autenticadas) redireciona para esta página.
 
 *   **`/auth/register` (Registro do Agente)**:
-    *   **Descrição**: Esta página é destinada ao registro de novos agentes no sistema.
-    *   **Interação do Usuário**: O usuário deve preencher um formulário com as informações necessárias (e.g., nome, e-mail, senha). Ao submeter o formulário, a aplicação tenta registrar o novo agente via Firebase Auth. Após o registro bem-sucedido, o usuário pode ser redirecionado para a página de login ou para a página de listagem de itens.
+    *   **Descrição**: Destinada ao registro de novos agentes. O cabeçalho da aplicação não é visível nesta rota.
+    *   **Interação do Usuário**: Preenche formulário para registro. Após o registro, o usuário pode ser redirecionado para a página de login.
 
 *   **`/agent/item/list` (Listagem de Itens - Apenas para Agentes)**:
-    *   **Descrição**: Esta é a principal página de gerenciamento para agentes, exibindo uma lista de todos os itens perdidos e achados registrados. Apenas agentes autenticados podem acessá-la. Se um usuário não autenticado tentar acessar esta rota, ele será redirecionado para a página de login.
-    *   **Interação do Usuário**:
-        *   **Visualização de Itens**: Os itens são exibidos em um formato de cartão (`ItemCard`), mostrando as informações essenciais de cada item.
-        *   **Detalhes do Item**: Ao clicar em um item, um modal (`ItemDetailsModal`) é aberto, exibindo detalhes completos sobre o item, como descrição, data de encontro, local, e informações de contato (se aplicável).
-        *   **Adicionar Novo Item**: Deve haver um botão (provavelmente na parte superior da página) que, ao ser clicado, abre um modal (`ItemModal` ou `ItemForm`) para que o agente possa preencher as informações de um novo item a ser registrado.
-        *   **Editar Item**: Ao visualizar os detalhes de um item, pode haver um botão "Editar" que permite ao agente modificar as informações do item, abrindo novamente o `ItemModal` ou `ItemForm` com os dados pré-preenchidos.
-        *   **Marcar como Recuperado**: Para itens que foram devolvidos ao proprietário, um botão "Marcar como Recuperado" (ou similar) pode estar presente, abrindo o `RetrieveItemModal` para que o agente possa confirmar e atualizar o status do item.
+    *   **Descrição**: Principal página de gerenciamento para agentes, exibindo uma lista de itens perdidos e achados. Dividida em duas seções: "Itens Perdidos" e "Itens Recuperados". Apenas agentes autenticados podem acessá-la; usuários não autenticados são redirecionados para `/`.
+    *   **Interação do Usuário**: Agentes podem:
+        *   **Visualizar Itens**: Itens são exibidos em `ItemCard`s.
+        *   **Ver Detalhes**: Um botão "Ver Detalhes" abre o `ItemDetailsModal` com informações completas, incluindo detalhes de recuperação para itens já recuperados.
+        *   **Adicionar Novo Item**: Um botão "Adicionar Item" abre o `ItemModal` para registro.
+        *   **Editar Item**: Um botão "Editar" (para itens perdidos) abre o `ItemModal` com dados pré-preenchidos.
+        *   **Marcar como Recuperado**: Um botão "Marcar como Recuperado" (para itens perdidos) abre o `RetrieveItemModal` para registrar a retirada do item.
+        *   **Excluir Item**: Um botão "Excluir" (para itens perdidos e recuperados) abre um modal de confirmação antes de remover o item e sua imagem associada.
+    *   **Header e Navegação**: O cabeçalho é visível nesta rota, com o dropdown de usuário (exibindo o email do agente) e o sidebar com opções de navegação.
 
 ## Configuração e Execução do Projeto
 
@@ -144,6 +151,11 @@ VITE_SUPABASE_ANON_KEY=sua_chave_anonima_supabase
     npm install
     # ou
     yarn install
+    ```
+
+3.  **Adicionar Componentes Shadcn UI (se necessário)**: Se os componentes Shadcn UI ainda não foram adicionados automaticamente via `npm install`, você pode adicioná-los manualmente:
+    ```bash
+    npx shadcn@latest add dropdown-menu sheet
     ```
 
 ### Execução
