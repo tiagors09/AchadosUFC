@@ -13,7 +13,7 @@ const RetrievedItemContext = createContext<RetrievedItemContextType | undefined>
 
 const FIREBASE_DB_URL = import.meta.env.VITE_DATABASE_URL;
 
-export const RetrievedItemProvider = ({ children }: { children: React.ReactNode }) => {
+export const RetrievedItemProvider = ({ children, isAuthenticatedContext }: { children: React.ReactNode, isAuthenticatedContext: boolean }) => {
   const [retrievedItems, setRetrievedItems] = useState<RetrievedItem[]>([]);
   const { idToken, refreshToken, updateTokens, logout } = useAuth();
 
@@ -50,22 +50,26 @@ export const RetrievedItemProvider = ({ children }: { children: React.ReactNode 
 
   async function loadRetrievedItems() {
     // Listagem pública: se quiser proteger, use authFetch em vez de fetch
-    const res = await fetch(`${FIREBASE_DB_URL}/retrievedItems.json`);
+    const res = await authFetch(`${FIREBASE_DB_URL}/retrievedItems.json`);
     const data = await res.json();
     if (!data) {
       setRetrievedItems([]);
       return;
     }
-    const items = Object.entries(data).map(([id, value]) => ({
-      ...(value as RetrievedItem),
-      id
-    }));
+    const items = Object.entries(data)
+      .filter((entry) => (entry[1] as RetrievedItem).item !== undefined && (entry[1] as RetrievedItem).item !== null)
+      .map(([id, value]) => ({
+        ...(value as RetrievedItem),
+        id
+      }));
     setRetrievedItems(items);
   }
 
   useEffect(() => {
-    loadRetrievedItems();
-  }, []);
+    if (isAuthenticatedContext) {
+      loadRetrievedItems();
+    }
+  }, [isAuthenticatedContext]);
 
   return (
     <RetrievedItemContext.Provider value={{ retrievedItems, addRetrievedItem }}>
