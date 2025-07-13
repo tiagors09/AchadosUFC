@@ -23,8 +23,6 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
   const [retrieveModalOpen, setRetrieveModalOpen] = useState(false);
   const [itemToRetrieve, setItemToRetrieve] = useState<UploadedItem | null>(null);
   const [activeSection, setActiveSection] = useState<'lost' | 'retrieved'>('lost'); // New state for active section
-  const [confirmDeleteRetrievedOpen, setConfirmDeleteRetrievedOpen] = useState(false); // State for retrieved delete confirmation
-  const [itemToDeleteRetrieved, setItemToDeleteRetrieved] = useState<RetrievedItem | null>(null); // Item to delete
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -77,24 +75,14 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
   const handleDeleteRetrieved = async (id: string) => {
     const item = retrievedItems.find(item => item.id === id);
     if (item) {
-      setItemToDeleteRetrieved(item);
-      setConfirmDeleteRetrievedOpen(true);
-    }
-  };
-
-  async function handleConfirmDeleteRetrieved() {
-    if (itemToDeleteRetrieved) {
       try {
-        await deleteRetrievedItem(itemToDeleteRetrieved.id);
-        toast.success('Item recuperado excluído com sucesso!');
-        setConfirmDeleteRetrievedOpen(false);
-        setItemToDeleteRetrieved(null);
+        await deleteRetrievedItem(item.id);
       } catch (error) {
         console.error("Error deleting retrieved item:", error);
         toast.error('Erro ao excluir item recuperado.');
       }
     }
-  }
+  };
 
   return (
     <div className="min-h-screen p-4 max-w-4xl mx-auto">
@@ -199,18 +187,6 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
         />
       )}
 
-      {editable && confirmDeleteRetrievedOpen && itemToDeleteRetrieved && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded shadow-md max-w-sm w-full">
-            <h3 className="text-lg font-semibold mb-4">Confirmar Exclusão</h3>
-            <p>Tem certeza que deseja excluir este item?</p>
-            <div className="mt-6 flex justify-end gap-4">
-              <Button className="cursor-pointer" variant="outline" onClick={() => setConfirmDeleteRetrievedOpen(false)}>Cancelar</Button>
-              <Button className="cursor-pointer" variant="destructive" onClick={handleConfirmDeleteRetrieved}>Excluir</Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
