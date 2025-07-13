@@ -6,7 +6,7 @@ import { useAuth } from './components/auth/AuthContext';
 import { RetrievedItemProvider } from "./components/items/RetrievedItemContext";
 import { useItems } from './components/items/ItemContext';
 import { Header } from './components/layout/Header';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuth();

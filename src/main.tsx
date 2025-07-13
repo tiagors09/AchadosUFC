@@ -15,12 +15,10 @@ createRoot(root).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <RetrievedItemProvider>
           <ItemProvider>
             <Toaster />
             <AppRoutes />
           </ItemProvider>
-        </RetrievedItemProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
