@@ -34,7 +34,7 @@ export default function AppRoutes() {
             <RetrievedItemProvider isAuthenticatedContext={true} deleteItemImage={deleteItemImage}>
               <ItemListPage editable={true} showRetrievedItemsSection={true} />
             </RetrievedItemProvider> :
-            <Navigate to='/auth/login'/>
+            <Navigate to='/'/>
         } />
       </Routes>
     </>

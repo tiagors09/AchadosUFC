@@ -52,7 +52,7 @@ export const Header = () => {
             </DropdownMenu>
           </div>
         ) : (
-          <Button className="cursor-pointer" onClick={() => navigate('/agent/item/list')}>
+          <Button className="cursor-pointer" onClick={() => navigate('/auth/login')}>
             Acessar portaria
           </Button>
         )}
