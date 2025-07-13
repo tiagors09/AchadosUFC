@@ -198,15 +198,24 @@ export function ItemProvider({ children }: { children: ReactNode }) {
    * 
    * @returns {Promise<void>}
    */
-  async function getItems(): Promise<void> {
-    const res = await fetch(`${FIREBASE_DB_URL}/items.json`);
-    const data = await res.json();
+  async function getItems(limit: number = 6, page: number = 1): Promise<UploadedItem[]> {
+    const res = await fetch(`${FIREBASE_DB_URL}/items.json`)
+    const data = await res.json()
+
     if (!data) {
-      setItems([]);
-      return;
+      setItems([])
+      return []
     }
-    const parsed: UploadedItem[] = Object.entries(data).map(([id, item]) => ({ id, ...(item as Omit<UploadedItem, 'id'>) }));
-    setItems(parsed);
+
+    const parsed: UploadedItem[] = Object.entries(data)
+      .map(([id, item]) => ({ id, ...(item as Omit<UploadedItem, 'id'>) }))
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+    const start = (page - 1) * limit
+    const paginated = parsed.slice(start, start + limit)
+
+    setItems(paginated)
+    return paginated
   }
 
   /**

@@ -17,17 +17,17 @@ export interface ItemFormProps {
   onSubmit: (data: ItemData, file?: File) => Promise<void>
 }
 
-
 export interface ItemContextType {
   items: UploadedItem[]
   uploadItem: (item: ItemData, file?: File) => Promise<void>
   updateItem: (id: string, item: ItemData) => Promise<void>
   getItemById: (id: string) => Promise<UploadedItem | null>
-  getItems: () => Promise<void>
+  getItems: (limit?: number, page?: number) => Promise<UploadedItem[]>
   deleteItem: (id: string) => Promise<void>
-  markItemAsRetrieved: (id: string) => Promise<void>;
-  deleteItemImage: (itemId: string) => Promise<void>;
+  markItemAsRetrieved: (id: string) => Promise<void>
+  deleteItemImage: (itemId: string) => Promise<void>
 }
+
 
 export type Item = {
   id: string
