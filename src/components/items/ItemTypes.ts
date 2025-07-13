@@ -25,6 +25,8 @@ export interface ItemContextType {
   getItemById: (id: string) => Promise<UploadedItem | null>
   getItems: () => Promise<void>
   deleteItem: (id: string) => Promise<void>
+  markItemAsRetrieved: (id: string) => Promise<void>;
+  deleteItemImage: (itemId: string) => Promise<void>;
 }
 
 export type Item = {
@@ -34,21 +36,22 @@ export type Item = {
 }
 
 export interface ItemCardProps {
-  item: UploadedItem
+  item: UploadedItem | RetrievedItem; // Modified to accept RetrievedItem
   onEdit?: (item: UploadedItem) => void
   onDeleted?: (id: string) => Promise<void>
   editable?: boolean
+  children?: React.ReactNode;
 }
 
 export interface RetrievedItem {
-  id: string
-  item: UploadedItem
-  retrievedAt: string
-  student: {
-    name: string
-    enrollment: string
-    course: string
-  }
+  id: string;
+  item: UploadedItem;
+  retrievalDate: string;
+  retrievedByUserId: string;
+  retrievedByUserEmail: string;
+  studentRegistration: string;
+  studentCourse: string;
+  observationNote?: string;
 }
 
 export interface RetrieveItemModalProps {
@@ -59,7 +62,7 @@ export interface RetrieveItemModalProps {
 }
 
 export interface ItemDetailsModalProps {
-  item: UploadedItem | null
-  open: boolean
-  onClose: () => void
+  item: UploadedItem | RetrievedItem | null;
+  open: boolean;
+  onClose: () => void;
 }

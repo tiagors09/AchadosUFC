@@ -52,6 +52,23 @@ export function ItemProvider({ children }: { children: ReactNode }) {
   }
 
   /**
+   * Exclui a imagem de um item do Supabase Storage.
+   *
+   * @param itemId - ID do item (usado como nome da imagem).
+   * @returns {Promise<void>}
+   */
+  async function deleteItemImage(itemId: string): Promise<void> {
+    const filePath = `${itemId}.jpg`;
+    const { error } = await supabase.storage
+      .from('itens')
+      .remove([filePath]);
+
+    if (error) {
+      console.error('Erro ao excluir imagem do Supabase:', error.message);
+    }
+  }
+
+  /**
    * Realiza uma requisição autenticada ao Firebase, atualizando o token se necessário.
    * 
    * @param {string} input - URL base da requisição.
@@ -161,6 +178,13 @@ export function ItemProvider({ children }: { children: ReactNode }) {
    * @throws {Error} - Se ocorrer erro ao excluir o item.
    */
   async function deleteItem(id: string): Promise<void> {
+    // Buscar o item antes de excluir para obter a URL da imagem
+    const itemToDelete = items.find(item => item.id === id);
+
+    if (itemToDelete && itemToDelete.imageUrl) {
+      await deleteItemImage(itemToDelete.id);
+    }
+
     const res = await authFetch(
       `${FIREBASE_DB_URL}/items/${id}.json`,
       { method: 'DELETE' }
@@ -197,8 +221,24 @@ export function ItemProvider({ children }: { children: ReactNode }) {
     return data ? { id, ...(data as Omit<UploadedItem, 'id'>) } : null;
   }
 
+  /**
+   * Marca um item como retirado, removendo-o da lista de itens perdidos.
+   * 
+   * @param {string} id - ID do item a ser marcado como retirado.
+   * @returns {Promise<void>}
+   * @throws {Error} - Se ocorrer erro ao marcar o item como retirado.
+   */
+  async function markItemAsRetrieved(id: string): Promise<void> {
+    const res = await authFetch(
+      `${FIREBASE_DB_URL}/items/${id}.json`,
+      { method: 'DELETE' }
+    );
+    if (!res.ok) throw new Error('Erro ao marcar item como retirado. Tente novamente mais tarde.');
+    setItems(prev => prev.filter(item => item.id !== id));
+  }
+
   return (
-    <ItemContext.Provider value={{ items, uploadItem, updateItem, getItemById, getItems, deleteItem }}>
+    <ItemContext.Provider value={{ items, uploadItem, updateItem, getItemById, getItems, deleteItem, markItemAsRetrieved, deleteItemImage }}>
       {children}
     </ItemContext.Provider>
   );

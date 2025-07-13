@@ -79,7 +79,7 @@ export default function AgentRegisterForm({ onSubmit }: AgentRegisterFormProps) 
           )}
         />
 
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full cursor-pointer">
           Cadastrar
         </Button>
       </form>
