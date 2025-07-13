@@ -25,9 +25,9 @@ export const ItemCard = ({ item, onEdit, onDeleted, editable = false, children }
   return (
     <>
       <div
-        className="p-4 border rounded-lg shadow-sm bg-white flex flex-col justify-between"
+        className="p-4 border rounded-lg shadow-sm bg-white flex flex-col justify-center items-center"
       >
-        <div>
+        <div className="flex flex-col justify-center items-center">
           {displayItem.imageUrl && (
             <img
               src={displayItem.imageUrl}
@@ -39,17 +39,23 @@ export const ItemCard = ({ item, onEdit, onDeleted, editable = false, children }
           <p className="text-xs mt-1">{new Date(displayItem.createdAt).toLocaleString()}</p>
         </div>
 
-        <div className="mt-3 flex gap-2 self-end">
-          <Button variant="outline" size="sm" onClick={() => setDetailsOpen(true)}>
-            Ver Detalhes
-          </Button>
+        <div className="w-full mt-3 flex gap-2 self-end justify-center items-center flex-wrap">
           {editable && !isRetrievedItem(item) && (
-            <Button variant="outline" size="sm" onClick={() => onEdit?.(item as UploadedItem)}>
+            <Button
+              className="w-[48%] cursor-pointer"
+              variant="outline"
+              size="sm"
+              onClick={() => onEdit?.(item as UploadedItem)}
+            >
               Editar
             </Button>
           )}
           {editable && (
-            <Button variant="destructive" size="sm" onClick={(e) => {
+            <Button 
+              className={`${isRetrievedItem(item) ? "w-full" : "w-[48%]"} cursor-pointer`} 
+              variant="destructive" 
+              size="sm" 
+              onClick={(e) => {
               e.stopPropagation();
               setConfirmOpen(true);
               setDetailsOpen(false);
@@ -57,6 +63,14 @@ export const ItemCard = ({ item, onEdit, onDeleted, editable = false, children }
               Excluir
             </Button>
           )}
+          <Button 
+            className="w-full cursor-pointer" 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setDetailsOpen(true)}
+          >
+            Ver Detalhes
+          </Button>
           {children}
         </div>
 
@@ -66,11 +80,11 @@ export const ItemCard = ({ item, onEdit, onDeleted, editable = false, children }
               <h3 className="text-lg font-semibold mb-4">Confirmar exclusão</h3>
               <p>Tem certeza que deseja excluir este item?</p>
               <div className="mt-6 flex justify-end gap-4">
-                <Button variant="secondary" onClick={() => {
+                <Button className="cursor-pointer" variant="outline" onClick={() => {
                   setConfirmOpen(false);
                   setDetailsOpen(false);
                 }}>Cancelar</Button>
-                <Button variant="destructive" onClick={handleConfirmDelete}>Excluir</Button>
+                <Button className="cursor-pointer" variant="destructive" onClick={handleConfirmDelete}>Excluir</Button>
               </div>
             </div>
           </div>

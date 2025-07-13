@@ -41,7 +41,7 @@ export default function ItemModal({
         <ItemForm initialData={initialData} onSubmit={onSubmit} />
 
         <DialogClose asChild>
-          <Button variant="ghost" className="mt-4 w-full">
+          <Button variant="outline" className="mt-4 w-full cursor-pointer">
             Fechar
           </Button>
         </DialogClose>

@@ -102,22 +102,24 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
         <h1 className="text-2xl font-bold">Itens Perdidos</h1>
         <div className="flex items-center gap-4">
           {editable ? 
-            <Button onClick={() => logout()}>Logout</Button> :
-            <Button onClick={() => navigate('/agent/item/list')}>Acessar portaria</Button>
+            <Button className="cursor-pointer" onClick={() => logout()}>Logout</Button> :
+            <Button className="cursor-pointer" onClick={() => navigate('/agent/item/list')}>Acessar portaria</Button>
           }
-          {editable && <Button onClick={handleAdd}>Adicionar Item</Button>}
+          {editable && <Button className="cursor-pointer" onClick={handleAdd}>Adicionar Item</Button>}
         </div>
       </header>
 
       {editable && showRetrievedItemsSection && (
         <div className="flex justify-center gap-4 mb-6">
           <Button
+            className="cursor-pointer"
             variant={activeSection === 'lost' ? 'default' : 'outline'}
             onClick={() => setActiveSection('lost')}
           >
             Itens Perdidos
           </Button>
           <Button
+            className="cursor-pointer"
             variant={activeSection === 'retrieved' ? 'default' : 'outline'}
             onClick={() => setActiveSection('retrieved')}
           >
@@ -141,7 +143,7 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
                 {editable && (
                   <Button
                     variant="outline"
-                    className="w-full mt-2"
+                    className="w-full cursor-pointer"
                     onClick={() => handleMarkAsRetrieved(item)}
                   >
                     Marcar como Recuperado
@@ -203,8 +205,8 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
             <h3 className="text-lg font-semibold mb-4">Confirmar Exclusão</h3>
             <p>Tem certeza que deseja excluir este item?</p>
             <div className="mt-6 flex justify-end gap-4">
-              <Button variant="secondary" onClick={() => setConfirmDeleteRetrievedOpen(false)}>Cancelar</Button>
-              <Button variant="destructive" onClick={handleConfirmDeleteRetrieved}>Excluir</Button>
+              <Button className="cursor-pointer" variant="outline" onClick={() => setConfirmDeleteRetrievedOpen(false)}>Cancelar</Button>
+              <Button className="cursor-pointer" variant="destructive" onClick={handleConfirmDeleteRetrieved}>Excluir</Button>
             </div>
           </div>
         </div>

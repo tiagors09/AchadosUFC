@@ -106,7 +106,7 @@ export const RetrieveItemModal = ({ item, open, onClose, onRetrieve }: RetrieveI
             Retirada em: <strong>{format(new Date(), "dd/MM/yyyy HH:mm")}</strong>
           </div>
           <div className="flex justify-end gap-2">
-            <Button variant="secondary" onClick={onClose}>Cancelar</Button>
+            <Button variant="outline" onClick={onClose}>Cancelar</Button>
             <Button onClick={handleSubmit}>Confirmar Retirada</Button>
           </div>
         </div>

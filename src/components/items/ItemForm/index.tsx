@@ -101,7 +101,7 @@ export default function ItemForm({ initialData = null, onSubmit }: ItemFormProps
         />
       </div>
 
-      <Button type="submit" disabled={isSubmitting}>
+      <Button className="cursor-pointer" type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Salvando...' : initialData ? 'Atualizar Item' : 'Cadastrar Item'}
       </Button>
     </form>

@@ -57,7 +57,7 @@ export default function AgentLoginForm({ onSubmit }: AgentLoginFormProps) {
           )}
         />
 
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full cursor-pointer">
           Entrar
         </Button>
       </form>

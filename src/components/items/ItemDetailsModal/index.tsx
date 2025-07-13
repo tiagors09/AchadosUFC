@@ -34,7 +34,7 @@ export function ItemDetailsModal({ item, open, onClose }: ItemDetailsModalProps)
         )}
 
         <div className="mt-6 flex justify-end">
-          <Button onClick={onClose}>Fechar</Button>
+          <Button variant="outline" className="cursor-pointer" onClick={onClose}>Fechar</Button>
         </div>
       </div>
     </div>
