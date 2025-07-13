@@ -5,8 +5,6 @@ import { toast } from "sonner"
 import { useState } from "react"
 import { useItems } from "../ItemContext"
 import ItemModal from "../ItemModal"
-import { useNavigate } from 'react-router'
-import { useAuth } from '../../auth/AuthContext'
 import { useRetrievedItems } from "../RetrievedItemContext";
 import { RetrieveItemModal } from "../RetrieveItemModal";
 
@@ -23,8 +21,6 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
   const [retrieveModalOpen, setRetrieveModalOpen] = useState(false);
   const [itemToRetrieve, setItemToRetrieve] = useState<UploadedItem | null>(null);
   const [activeSection, setActiveSection] = useState<'lost' | 'retrieved'>('lost'); // New state for active section
-  const navigate = useNavigate();
-  const { logout } = useAuth();
 
   function handleAdd() {
     setEditData(null)
@@ -126,7 +122,7 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
               >
                 {editable && (
                   <Button
-                    variant="outline"
+                    variant="default"
                     className="w-full cursor-pointer"
                     onClick={() => handleMarkAsRetrieved(item)}
                   >

@@ -4,7 +4,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogClose
+  DialogClose,
+  DialogDescription
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import type { ItemData, UploadedItem } from '../ItemTypes'
@@ -36,6 +37,9 @@ export default function ItemModal({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>{initialData ? 'Editar Item' : 'Novo Item'}</DialogTitle>
+          <DialogDescription className="sr-only">{
+            initialData ? 'Formulário para editar os detalhes do item.' : 'Formulário para adicionar um novo item.'
+          }</DialogDescription>
         </DialogHeader>
 
         <ItemForm initialData={initialData} onSubmit={onSubmit} />
