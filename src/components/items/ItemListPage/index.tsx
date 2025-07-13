@@ -85,14 +85,10 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
   };
 
   return (
-    <div className="min-h-screen p-4 max-w-4xl mx-auto">
-      <header className="flex justify-between items-center mb-6 border-b pb-4">
+    <div className="min-h-screen px-4 py-8 mt-[82px] max-w-4xl mx-auto">
+      <header className="flex justify-between items-center mb-6 brder-b pb-4">
         <h1 className="text-2xl font-bold">Itens Perdidos</h1>
         <div className="flex items-center gap-4">
-          {editable ? 
-            <Button className="cursor-pointer" onClick={() => logout()}>Logout</Button> :
-            <Button className="cursor-pointer" onClick={() => navigate('/agent/item/list')}>Acessar portaria</Button>
-          }
           {editable && <Button className="cursor-pointer" onClick={handleAdd}>Adicionar Item</Button>}
         </div>
       </header>
@@ -157,7 +153,7 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
                 />
               ))
             ) : (
-              <p className="col-span-full text-center text-muted-foreground">Nenhum item recuperado ainda.</p>
+              <p className="py-8 col-span-full text-center text-muted-foreground">Nenhum item recuperado ainda.</p>
             )}
           </div>
         </>

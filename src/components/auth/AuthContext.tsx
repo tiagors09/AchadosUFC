@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: false,
       loading: false,
     }));
-    navigate('/auth/login');
+    navigate('/');
   }
 
   /**

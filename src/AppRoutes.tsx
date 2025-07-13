@@ -5,15 +5,20 @@ import ItemListPage from "./components/items/ItemListPage";
 import { useAuth } from './components/auth/AuthContext';
 import { RetrievedItemProvider } from "./components/items/RetrievedItemContext";
 import { useItems } from './components/items/ItemContext';
-import { Header } from './components/layout/Header'; // Import the Header component
+import { Header } from './components/layout/Header';
+import { useLocation } from 'react-router-dom';
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuth();
   const { deleteItemImage } = useItems();
+  const location = useLocation();
+
+  const hideHeaderPaths = ['/auth/login', '/auth/register'];
+  const shouldShowHeader = !hideHeaderPaths.includes(location.pathname);
 
   return (
     <>
-      <Header />
+      {shouldShowHeader && <Header />}
       <Routes>
         <Route path='/' element={
           <RetrievedItemProvider isAuthenticatedContext={false} deleteItemImage={deleteItemImage}>
