@@ -3,7 +3,7 @@ import { useAuth } from '../../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { User, Menu, Home, DoorOpen } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"; // Import Sheet components
 
 export const Header = () => {
   const { isAuthenticated, logout, user } = useAuth();
@@ -15,11 +15,13 @@ export const Header = () => {
         {isAuthenticated && (
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="mr-2 cursor-pointer">
+              <Button variant="ghost" size="icon" className="cursor-pointer">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-60">
+              <SheetTitle className="sr-only">Menu de Navegação</SheetTitle>
+              <SheetDescription className="sr-only">Opções de navegação do aplicativo.</SheetDescription>
               <nav className="flex flex-col gap-2 mt-10">
                 <Button variant="ghost" className="justify-start text-lg cursor-pointer" onClick={() => navigate('/')}>
                   <Home className="h-5 w-5 mr-1" /> Página Inicial
