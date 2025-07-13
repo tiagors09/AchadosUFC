@@ -51,8 +51,8 @@ export const RetrieveItemModal = ({ item, open, onClose, onRetrieve }: RetrieveI
       id: item.id,
       item: item,
       retrievalDate: new Date().toISOString(),
-      retrievedByUserId: user.uid as string,
-      retrievedByUserEmail: user.email || "",
+      retrievedByUserId: user.user_id,
+      retrievedByUserEmail: user.email,
       studentRegistration,
       studentCourse,
       observationNote: observationNote, // Alterado de observationNote || undefined
