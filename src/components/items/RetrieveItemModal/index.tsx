@@ -18,6 +18,8 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import type { RetrievedItem, RetrieveItemModalProps } from "../ItemTypes"
+import { useAuth } from '../../auth/AuthContext';
+import { Textarea } from "@/components/ui/textarea";
 
 const courses = [
   "Ciência da Computação",
@@ -29,21 +31,31 @@ const courses = [
 ]
 
 export const RetrieveItemModal = ({ item, open, onClose, onRetrieve }: RetrieveItemModalProps) => {
-  const [name, setName] = useState("")
-  const [enrollment, setEnrollment] = useState("")
-  const [course, setCourse] = useState("")
+  const { user } = useAuth(); // Get authenticated user info
+  const [studentRegistration, setStudentRegistration] = useState("")
+  const [studentCourse, setStudentCourse] = useState("")
+  const [observationNote, setObservationNote] = useState<string>(""); // Changed from undefined to empty string
 
   const handleSubmit = async () => {
-    if (!name || !enrollment || !course) {
-      toast.error("Preencha todos os campos.")
+    if (!studentRegistration || !studentCourse) {
+      toast.error("Preencha todos os campos obrigatórios: Matrícula e Curso.")
       return
+    }
+
+    if (!user) {
+      toast.error("Erro: Usuário não autenticado.");
+      return;
     }
 
     const data: RetrievedItem = {
       id: item.id,
-      item,
-      retrievedAt: new Date().toISOString(),
-      student: { name, enrollment, course }
+      item: item,
+      retrievalDate: new Date().toISOString(),
+      retrievedByUserId: user.uid as string,
+      retrievedByUserEmail: user.email || "",
+      studentRegistration,
+      studentCourse,
+      observationNote: observationNote, // Alterado de observationNote || undefined
     }
 
     try {
@@ -63,16 +75,12 @@ export const RetrieveItemModal = ({ item, open, onClose, onRetrieve }: RetrieveI
         </DialogHeader>
         <div className="space-y-4">
           <div>
-            <Label>Nome do Aluno</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
+            <Label>Matrícula do Aluno</Label>
+            <Input value={studentRegistration} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStudentRegistration(e.target.value)} />
           </div>
           <div>
-            <Label>Matrícula</Label>
-            <Input value={enrollment} onChange={(e) => setEnrollment(e.target.value)} />
-          </div>
-          <div>
-            <Label>Curso</Label>
-            <Select value={course} onValueChange={setCourse}>
+            <Label>Curso do Aluno</Label>
+            <Select value={studentCourse} onValueChange={setStudentCourse}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecione um curso" />
               </SelectTrigger>
@@ -84,6 +92,15 @@ export const RetrieveItemModal = ({ item, open, onClose, onRetrieve }: RetrieveI
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div>
+            <Label htmlFor="observationNote">Nota de Observação (Opcional)</Label>
+            <Textarea
+              id="observationNote"
+              value={observationNote}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setObservationNote(e.target.value)}
+              placeholder="Adicione qualquer observação relevante sobre a retirada..."
+            />
           </div>
           <div className="text-sm text-muted-foreground">
             Retirada em: <strong>{format(new Date(), "dd/MM/yyyy HH:mm")}</strong>

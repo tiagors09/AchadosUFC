@@ -41,14 +41,14 @@ export interface ItemCardProps {
 }
 
 export interface RetrievedItem {
-  id: string
-  item: UploadedItem
-  retrievedAt: string
-  student: {
-    name: string
-    enrollment: string
-    course: string
-  }
+  id: string;
+  item: UploadedItem;
+  retrievalDate: string;
+  retrievedByUserId: string;
+  retrievedByUserEmail: string;
+  studentRegistration: string;
+  studentCourse: string;
+  observationNote?: string;
 }
 
 export interface RetrieveItemModalProps {
