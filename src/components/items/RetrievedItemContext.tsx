@@ -7,13 +7,14 @@ import { toast } from 'sonner';
 interface RetrievedItemContextType {
   retrievedItems: RetrievedItem[];
   addRetrievedItem: (data: RetrievedItem) => Promise<void>;
+  deleteRetrievedItem: (id: string) => Promise<void>;
 }
 
 const RetrievedItemContext = createContext<RetrievedItemContextType | undefined>(undefined);
 
 const FIREBASE_DB_URL = import.meta.env.VITE_DATABASE_URL;
 
-export const RetrievedItemProvider = ({ children, isAuthenticatedContext }: { children: React.ReactNode, isAuthenticatedContext: boolean }) => {
+export const RetrievedItemProvider = ({ children, isAuthenticatedContext, deleteItemImage }: { children: React.ReactNode, isAuthenticatedContext: boolean, deleteItemImage: (itemId: string) => Promise<void> }) => {
   const [retrievedItems, setRetrievedItems] = useState<RetrievedItem[]>([]);
   const { idToken, refreshToken, updateTokens, logout } = useAuth();
 
@@ -65,6 +66,23 @@ export const RetrievedItemProvider = ({ children, isAuthenticatedContext }: { ch
     setRetrievedItems(items);
   }
 
+  async function deleteRetrievedItem(id: string): Promise<void> {
+    // Get the original item's ID from the retrieved item
+    const retrievedItemToDelete = retrievedItems.find(item => item.id === id);
+    // Removed: const { deleteItemImage } = useItems(); // Get deleteItemImage from ItemContext
+
+    if (retrievedItemToDelete && retrievedItemToDelete.item.imageUrl) {
+      await deleteItemImage(retrievedItemToDelete.item.id); // Use deleteItemImage from props
+    }
+
+    const res = await authFetch(
+      `${FIREBASE_DB_URL}/retrievedItems/${id}.json`,
+      { method: "DELETE" }
+    );
+    if (!res.ok) throw new Error("Erro ao excluir item recuperado.");
+    setRetrievedItems(prev => prev.filter(item => item.id !== id));
+  }
+
   useEffect(() => {
     if (isAuthenticatedContext) {
       loadRetrievedItems();
@@ -72,7 +90,7 @@ export const RetrievedItemProvider = ({ children, isAuthenticatedContext }: { ch
   }, [isAuthenticatedContext]);
 
   return (
-    <RetrievedItemContext.Provider value={{ retrievedItems, addRetrievedItem }}>
+    <RetrievedItemContext.Provider value={{ retrievedItems, addRetrievedItem, deleteRetrievedItem }}>
       {children}
     </RetrievedItemContext.Provider>
   );

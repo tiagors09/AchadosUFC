@@ -17,12 +17,14 @@ interface Props {
 
 export default function ItemListPage({ editable = false, showRetrievedItemsSection = true }: Props) {
   const { items, uploadItem, updateItem, deleteItem, getItems, markItemAsRetrieved } = useItems()
-  const { retrievedItems, addRetrievedItem } = useRetrievedItems();
+  const { retrievedItems, addRetrievedItem, deleteRetrievedItem } = useRetrievedItems();
   const [modalOpen, setModalOpen] = useState(false)
   const [editData, setEditData] = useState<UploadedItem | null>(null)
   const [retrieveModalOpen, setRetrieveModalOpen] = useState(false);
   const [itemToRetrieve, setItemToRetrieve] = useState<UploadedItem | null>(null);
   const [activeSection, setActiveSection] = useState<'lost' | 'retrieved'>('lost'); // New state for active section
+  const [confirmDeleteRetrievedOpen, setConfirmDeleteRetrievedOpen] = useState(false); // State for retrieved delete confirmation
+  const [itemToDeleteRetrieved, setItemToDeleteRetrieved] = useState<RetrievedItem | null>(null); // Item to delete
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -69,6 +71,28 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
     } catch (error) {
       console.error("Error marking item as retrieved:", error);
       toast.error('Erro ao marcar item como retirado.');
+    }
+  }
+
+  const handleDeleteRetrieved = async (id: string) => {
+    const item = retrievedItems.find(item => item.id === id);
+    if (item) {
+      setItemToDeleteRetrieved(item);
+      setConfirmDeleteRetrievedOpen(true);
+    }
+  };
+
+  async function handleConfirmDeleteRetrieved() {
+    if (itemToDeleteRetrieved) {
+      try {
+        await deleteRetrievedItem(itemToDeleteRetrieved.id);
+        toast.success('Item recuperado excluído com sucesso!');
+        setConfirmDeleteRetrievedOpen(false);
+        setItemToDeleteRetrieved(null);
+      } catch (error) {
+        console.error("Error deleting retrieved item:", error);
+        toast.error('Erro ao excluir item recuperado.');
+      }
     }
   }
 
@@ -137,8 +161,9 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
               retrievedItems.map((retrievedItem) => (
                 <ItemCard
                   key={retrievedItem.id}
-                  item={retrievedItem.item} // Display the original item data
-                  editable={false} // Retrieved items are not editable
+                  item={retrievedItem}
+                  editable={editable}
+                  onDeleted={editable ? handleDeleteRetrieved : undefined}
                 />
               ))
             ) : (
@@ -170,6 +195,19 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
           onClose={() => setRetrieveModalOpen(false)}
           onRetrieve={handleRetrieveSubmit}
         />
+      )}
+
+      {editable && confirmDeleteRetrievedOpen && itemToDeleteRetrieved && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded shadow-md max-w-sm w-full">
+            <h3 className="text-lg font-semibold mb-4">Confirmar Exclusão</h3>
+            <p>Tem certeza que deseja excluir este item?</p>
+            <div className="mt-6 flex justify-end gap-4">
+              <Button variant="secondary" onClick={() => setConfirmDeleteRetrievedOpen(false)}>Cancelar</Button>
+              <Button variant="destructive" onClick={handleConfirmDeleteRetrieved}>Excluir</Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

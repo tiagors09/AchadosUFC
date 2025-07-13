@@ -52,6 +52,23 @@ export function ItemProvider({ children }: { children: ReactNode }) {
   }
 
   /**
+   * Exclui a imagem de um item do Supabase Storage.
+   *
+   * @param itemId - ID do item (usado como nome da imagem).
+   * @returns {Promise<void>}
+   */
+  async function deleteItemImage(itemId: string): Promise<void> {
+    const filePath = `${itemId}.jpg`;
+    const { error } = await supabase.storage
+      .from('itens')
+      .remove([filePath]);
+
+    if (error) {
+      console.error('Erro ao excluir imagem do Supabase:', error.message);
+    }
+  }
+
+  /**
    * Realiza uma requisição autenticada ao Firebase, atualizando o token se necessário.
    * 
    * @param {string} input - URL base da requisição.
@@ -161,6 +178,13 @@ export function ItemProvider({ children }: { children: ReactNode }) {
    * @throws {Error} - Se ocorrer erro ao excluir o item.
    */
   async function deleteItem(id: string): Promise<void> {
+    // Buscar o item antes de excluir para obter a URL da imagem
+    const itemToDelete = items.find(item => item.id === id);
+
+    if (itemToDelete && itemToDelete.imageUrl) {
+      await deleteItemImage(itemToDelete.id);
+    }
+
     const res = await authFetch(
       `${FIREBASE_DB_URL}/items/${id}.json`,
       { method: 'DELETE' }
@@ -214,7 +238,7 @@ export function ItemProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <ItemContext.Provider value={{ items, uploadItem, updateItem, getItemById, getItems, deleteItem, markItemAsRetrieved }}>
+    <ItemContext.Provider value={{ items, uploadItem, updateItem, getItemById, getItems, deleteItem, markItemAsRetrieved, deleteItemImage }}>
       {children}
     </ItemContext.Provider>
   );

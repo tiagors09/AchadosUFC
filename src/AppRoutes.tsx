@@ -4,14 +4,16 @@ import AgentRegisterPage from "./components/auth/AgentRegisterPage";
 import ItemListPage from "./components/items/ItemListPage";
 import { useAuth } from './components/auth/AuthContext';
 import { RetrievedItemProvider } from "./components/items/RetrievedItemContext";
+import { useItems } from './components/items/ItemContext';
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuth();
+  const { deleteItemImage } = useItems();
 
   return (
     <Routes>
       <Route path='/' element={
-        <RetrievedItemProvider isAuthenticatedContext={false}>
+        <RetrievedItemProvider isAuthenticatedContext={false} deleteItemImage={deleteItemImage}>
           <ItemListPage editable={false} showRetrievedItemsSection={false} />
         </RetrievedItemProvider>
       } />
@@ -21,7 +23,7 @@ export default function AppRoutes() {
       </Route>
       <Route path='agent/item/list' element={
         isAuthenticated ?
-          <RetrievedItemProvider isAuthenticatedContext={true}>
+          <RetrievedItemProvider isAuthenticatedContext={true} deleteItemImage={deleteItemImage}>
             <ItemListPage editable={true} showRetrievedItemsSection={true} />
           </RetrievedItemProvider> :
           <Navigate to='/auth/login'/>

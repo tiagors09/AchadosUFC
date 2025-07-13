@@ -26,6 +26,7 @@ export interface ItemContextType {
   getItems: () => Promise<void>
   deleteItem: (id: string) => Promise<void>
   markItemAsRetrieved: (id: string) => Promise<void>;
+  deleteItemImage: (itemId: string) => Promise<void>;
 }
 
 export type Item = {
@@ -35,7 +36,7 @@ export type Item = {
 }
 
 export interface ItemCardProps {
-  item: UploadedItem
+  item: UploadedItem | RetrievedItem; // Modified to accept RetrievedItem
   onEdit?: (item: UploadedItem) => void
   onDeleted?: (id: string) => Promise<void>
   editable?: boolean
@@ -61,7 +62,7 @@ export interface RetrieveItemModalProps {
 }
 
 export interface ItemDetailsModalProps {
-  item: UploadedItem | null
-  open: boolean
-  onClose: () => void
+  item: UploadedItem | RetrievedItem | null;
+  open: boolean;
+  onClose: () => void;
 }
