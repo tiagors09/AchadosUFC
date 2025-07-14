@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { ItemCard } from "../ItemCard"
 import type { ItemData, UploadedItem, RetrievedItem } from "../ItemTypes"
 import { toast } from "sonner"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useItems } from "../ItemContext"
 import ItemModal from "../ItemModal"
 import { useRetrievedItems } from "../RetrievedItemContext";
@@ -13,8 +13,6 @@ interface Props {
   showRetrievedItemsSection?: boolean;
 }
 
-const ITEMS_PER_PAGE = 6;
-
 export default function ItemListPage({ editable = false, showRetrievedItemsSection = true }: Props) {
   const { items, uploadItem, updateItem, deleteItem, getItems, markItemAsRetrieved } = useItems()
   const { retrievedItems, addRetrievedItem, deleteRetrievedItem } = useRetrievedItems();
@@ -23,18 +21,7 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
   const [retrieveModalOpen, setRetrieveModalOpen] = useState(false);
   const [itemToRetrieve, setItemToRetrieve] = useState<UploadedItem | null>(null);
   const [activeSection, setActiveSection] = useState<'lost' | 'retrieved'>('lost');
-
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-
-  useEffect(() => {
-    loadItems(page);
-  }, [page]);
-
-  async function loadItems(page: number) {
-    const fetched = await getItems(ITEMS_PER_PAGE, page);
-    setHasMore(fetched.length === ITEMS_PER_PAGE);
-  }
+  const [searchTerm, setSearchTerm] = useState('');
 
   function handleAdd() {
     setEditData(null)
@@ -53,14 +40,13 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
       await uploadItem(data, file)
     }
     setModalOpen(false)
-    loadItems(page);
   }
 
   async function handleDelete(id: string) {
     try {
       await deleteItem(id)
+      await getItems()
       toast.success('Item excluído com sucesso!')
-      loadItems(page);
     } catch {
       toast.error('Erro ao excluir o item.')
     }
@@ -77,7 +63,6 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
       await markItemAsRetrieved(retrievedData.item.id);
       toast.success('Item marcado como retirado com sucesso!');
       setRetrieveModalOpen(false);
-      loadItems(page);
     } catch (error) {
       console.error("Error marking item as retrieved:", error);
       toast.error('Erro ao marcar item como retirado.');
@@ -96,22 +81,33 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
     }
   };
 
+  const filteredItems = items.filter((item) => {
+    const search = searchTerm.toLowerCase();
+    return (
+      item.description?.toLowerCase().includes(search)
+    );
+  });
+
   return (
     <div className="min-h-screen px-4 py-8 mt-[82px] max-w-4xl mx-auto">
-      <header className="flex justify-between items-center mb-6 border-b pb-4">
+      <header className="flex justify-between items-center mb-6 brder-b pb-4">
         <h1 className="text-2xl font-bold">Itens Perdidos</h1>
-        {editable && <Button onClick={handleAdd}>Adicionar Item</Button>}
+        <div className="flex items-center gap-4">
+          {editable && <Button className="cursor-pointer" onClick={handleAdd}>Adicionar Item</Button>}
+        </div>
       </header>
 
       {editable && showRetrievedItemsSection && (
         <div className="flex justify-center gap-4 mb-6">
           <Button
+            className="cursor-pointer"
             variant={activeSection === 'lost' ? 'default' : 'outline'}
             onClick={() => setActiveSection('lost')}
           >
             Itens Perdidos
           </Button>
           <Button
+            className="cursor-pointer"
             variant={activeSection === 'retrieved' ? 'default' : 'outline'}
             onClick={() => setActiveSection('retrieved')}
           >
@@ -122,9 +118,19 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
 
       {activeSection === 'lost' && (
         <>
+          <div className="mb-6">
+            <input
+              type="text"
+              placeholder="Buscar item por nome ou descrição..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
           <h2 className="text-xl font-semibold mb-4">Itens Perdidos</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {items.map((item: UploadedItem) => (
+            {filteredItems.map((item: UploadedItem) => (
               <ItemCard
                 key={item.id}
                 item={item}
@@ -135,7 +141,7 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
                 {editable && (
                   <Button
                     variant="default"
-                    className="w-full"
+                    className="w-full cursor-pointer"
                     onClick={() => handleMarkAsRetrieved(item)}
                   >
                     Marcar como Recuperado
@@ -143,23 +149,6 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
                 )}
               </ItemCard>
             ))}
-          </div>
-
-          <div className="flex justify-center gap-4 mt-8">
-            <Button
-              variant="secondary"
-              onClick={() => setPage(prev => Math.max(prev - 1, 1))}
-              disabled={page === 1}
-            >
-              Anterior
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => setPage(prev => prev + 1)}
-              disabled={!hasMore}
-            >
-              Próxima
-            </Button>
           </div>
         </>
       )}
@@ -183,6 +172,11 @@ export default function ItemListPage({ editable = false, showRetrievedItemsSecti
           </div>
         </>
       )}
+
+      <div className="flex justify-center gap-4 mt-8">
+        <Button variant="secondary" disabled>Anterior</Button>
+        <Button variant="secondary" disabled>Próxima</Button>
+      </div>
 
       {editable && (
         <ItemModal
